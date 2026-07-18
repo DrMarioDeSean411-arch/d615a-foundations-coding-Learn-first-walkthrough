@@ -28,20 +28,4 @@ Everything runs client-side. No build step, no CDN calls, no
 `localStorage` — progress lives in memory for the length of the browser
 tab, same as the rest of the suite.
 
-## Tech notes
 
-- Vanilla HTML/CSS/JS, one file, ~1,200 lines
-- Shared design tokens with the rest of `DrMarioDeSean411-arch`: 860px
-  shell, `#f5f5f3` background, 12px-radius cards, green `#1D9E75` /
-  red `#A32D2D` feedback colors
-- State pattern: `STATE.checks[topicId][i]`, `STATE.sels[topicId][i]`,
-  `STATE.reviewed[topicId]`, `STATE.exOK[topicId]` — same shape as
-  `STATE`/`SELS` in the practice-exam tools, extended for a teaching flow
-- Curriculum content lives in one `CURRICULUM` object near the top of the
-  `<script>` block — add a topic by adding an object to a competency's
-  `topics` array; no other code needs to change
-
-## File
-
-- `d615a-learn.html` — the whole tool, open it directly in a browser or
-  deploy as-is to GitHub Pages
