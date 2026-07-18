@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D615A · Foundations of Coding — Learn</title>
+<style>
+  :root{
+    --bg:#f5f5f3; --card:#fff; --line:#e0ddd6;
+    --ink:#1f1f1d; --label:#9b9b97; --label2:#6b6b67;
+    --green:#1D9E75; --red:#A32D2D;
+    --c1:#2D6CA3; --c2:#B8722E; --c3:#6B4C9A; --mix:#3a3a37;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .shell{max-width:860px;margin:0 auto;padding:20px 16px 64px;}
+  code, pre, .mono{font-family:"SF Mono",Menlo,Consolas,monospace;}
+
+  /* top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .brand{font-size:15px;font-weight:700;letter-spacing:.2px;}
+  .brand small{display:block;font-weight:500;color:var(--label2);font-size:11.5px;margin-top:2px;}
+  .pills{display:flex;gap:6px;flex-wrap:wrap;}
+  .pill{border:0.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;
+    font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:box-shadow .15s;}
+  .pill:hover{box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .pill.active{background:var(--dot,#333);color:#fff;border-color:transparent;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--dot,#999);}
+  .pill.active .dot{background:#fff;}
+
+  /* scoreboard */
+  .scoreboard{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px;}
+  .stat{background:var(--card);border:0.5px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;}
+  .stat .n{font-size:19px;font-weight:700;}
+  .stat .l{font-size:10px;color:var(--label);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+  @media(max-width:600px){.scoreboard{grid-template-columns:repeat(3,1fr);}}
+
+  /* progress bar */
+  .progwrap{background:var(--card);border:0.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:16px;}
+  .progtop{display:flex;justify-content:space-between;font-size:11.5px;color:var(--label2);margin-bottom:6px;}
+  .progtrack{height:6px;border-radius:99px;background:#ece9e2;overflow:hidden;}
+  .progfill{height:100%;background:var(--green);border-radius:99px;transition:width .3s;}
+
+  /* section nav */
+  .secnav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .secbtn{flex:1;min-width:140px;background:var(--card);border:0.5px solid var(--line);border-radius:12px;
+    padding:12px;cursor:pointer;text-align:left;transition:transform .1s;}
+  .secbtn:hover{transform:translateY(-1px);}
+  .secbtn .t{font-size:13px;font-weight:700;}
+  .secbtn .s{font-size:11px;color:var(--label);margin-top:3px;}
+  .secbtn.on{border-color:var(--dot,#333);box-shadow:0 0 0 1px var(--dot,#333) inset;}
+
+  /* topic tab row */
+  .tabrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;}
+  .tab{flex:0 0 auto;border:0.5px solid var(--line);background:var(--card);border-radius:10px;
+    padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--label2);white-space:nowrap;}
+  .tab.on{background:var(--ink);color:#fff;border-color:transparent;}
+  .tab.done{color:var(--green);}
+  .tab.on.done{color:#fff;}
+
+  /* cards */
+  .card{background:var(--card);border:0.5px solid var(--line);border-radius:12px;padding:18px 18px 20px;margin-bottom:14px;}
+  .card h2{font-size:17px;margin:0 0 4px;}
+  .kicker{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--label);font-weight:700;margin-bottom:6px;}
+  .card p{font-size:13.5px;line-height:1.62;color:#3a3a37;margin:0 0 12px;}
+  .card p:last-child{margin-bottom:0;}
+  ul.teach{margin:0 0 12px;padding-left:19px;}
+  ul.teach li{font-size:13.5px;line-height:1.6;color:#3a3a37;margin-bottom:5px;}
+
+  pre.codebox{background:#242320;color:#e9e6dd;border-radius:9px;padding:13px 14px;font-size:12.5px;
+    line-height:1.55;overflow-x:auto;margin:0 0 10px;}
+  .comment{color:#8b8a80;}
+
+  .examplebox{border:0.5px dashed var(--line);border-radius:10px;padding:14px;margin-bottom:12px;background:#fbfaf8;}
+  .examplebox .tag{font-size:10.5px;font-weight:700;color:var(--label2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;}
+
+  /* mini exercise / grader */
+  .exwrap{border:0.5px solid var(--line);border-radius:10px;padding:14px;margin-bottom:6px;background:#fcfcfb;}
+  .exwrap .tag{font-size:10.5px;font-weight:700;color:var(--c2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;}
+  .exwrap textarea{width:100%;min-height:76px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;
+    border:0.5px solid var(--line);border-radius:8px;padding:9px 10px;resize:vertical;background:#fff;color:var(--ink);}
+  .exgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
+  @media(max-width:560px){.exgrid{grid-template-columns:1fr;}}
+  .exlabel{font-size:10.5px;color:var(--label2);font-weight:600;margin-bottom:4px;display:block;}
+  .exrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;}
+  .btn{border:none;border-radius:8px;padding:9px 15px;font-size:12.5px;font-weight:700;cursor:pointer;background:var(--ink);color:#fff;}
+  .btn.ghost{background:transparent;color:var(--label2);border:0.5px solid var(--line);}
+  .exresult{font-size:12.5px;font-weight:700;padding:6px 0;}
+  .exresult.ok{color:var(--green);}
+  .exresult.no{color:var(--red);}
+  .hintbox{font-size:12px;color:var(--label2);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--line);}
+  details.solution{margin-top:8px;font-size:12.5px;}
+  details.solution summary{cursor:pointer;font-weight:700;color:var(--label2);font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;}
+  details.solution pre{margin-top:8px;}
+  .concepts{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+  .chip{font-size:10px;background:#eee9df;color:var(--label2);border-radius:999px;padding:3px 9px;font-weight:600;}
+
+  /* knowledge check */
+  .qhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+  .diff{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.3px;}
+  .diff.easy{background:#e4f3ec;color:var(--green);}
+  .diff.med{background:#f6ecdd;color:var(--c2);}
+  .diff.hard{background:#f3e3e3;color:var(--red);}
+  .opt{display:block;width:100%;text-align:left;border:0.5px solid var(--line);background:#fff;border-radius:9px;
+    padding:10px 12px;font-size:13px;margin-bottom:7px;cursor:pointer;color:var(--ink);}
+  .opt:hover{background:#faf9f6;}
+  .opt.correct{border-color:var(--green);background:#eef8f3;color:#0f6b4e;font-weight:600;}
+  .opt.wrong{border-color:var(--red);background:#faeeee;color:#7c2323;font-weight:600;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:8px;font-size:12.5px;line-height:1.55;padding:10px 12px;border-radius:9px;background:#f7f6f2;}
+  .feedback .lbl{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:3px;}
+  .feedback.rationale .lbl{color:var(--green);}
+  .feedback.misconception .lbl{color:var(--red);}
+
+  .revrow{display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+  .revbtn{border:0.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;}
+  .revbtn.done{border-color:var(--green);color:var(--green);}
+  .navrow{display:flex;justify-content:space-between;margin-top:6px;}
+  .navrow button{background:var(--card);border:0.5px solid var(--line);border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .navrow button:disabled{opacity:.35;cursor:default;}
+
+  footer{text-align:center;font-size:11px;color:var(--label);margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">D615A · Foundations of Coding<small>Learn-first walkthrough — not a timed practice exam</small></div>
+    <div class="pills" id="pillRow"></div>
+  </div>
+
+  <div class="scoreboard" id="scoreboard"></div>
+
+  <div class="progwrap">
+    <div class="progtop"><span id="progLabel">Overall progress</span><span id="progPct">0%</span></div>
+    <div class="progtrack"><div class="progfill" id="progFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="secnav" id="secNav"></div>
+
+  <div class="tabrow" id="tabRow"></div>
+
+  <div id="main"></div>
+
+  <div class="navrow">
+    <button id="prevBtn">&larr; Previous topic</button>
+    <button id="nextBtn">Next topic &rarr;</button>
+  </div>
+
+  <footer>DrMarioDeSean411-arch · single-file, no external calls, nothing leaves this tab</footer>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   CURRICULUM DATA
+--------------------------------------------------------- */
+const CURRICULUM = {
+  c1: { name:"C1 · Algorithmic Thinking & Programming", short:"C1", color:"var(--c1)", topics: [
+
+    { id:"c1t1", title:"Variables, Data Types & Expressions",
+      teach:[
+        "A variable is a named slot in memory that holds a value the program can read or change while it runs. The name is for the human reading the code — the machine only cares about the address behind it — so a good variable name states what the value represents, not what type it is.",
+        "Every value carries a data type: an integer, a floating-point number, a string of characters, or a boolean. The type determines which operations make sense. Adding two integers produces a sum; adding two strings concatenates them; adding an integer to a string is either an error or a silent coercion, depending on the language, and that gap is where a surprising number of first-semester bugs come from.",
+        "An expression combines variables, literals, and operators into a single value: `price * quantity`, `age >= 18`, `first_name + \" \" + last_name`. Assignment (`=`) is not the same operation as mathematical equality — it takes whatever the right side evaluates to and stores it under the name on the left. Reading `total = total + 1` as an algebra equation with no solution is a common early misreading; read it instead as an instruction: compute the right side first, then overwrite `total`."
+      ],
+      example:{ tag:"Worked example", code:
+`// starting balance and a deposit
+let balance = 120.50;
+let deposit = 45;
+
+balance = balance + deposit;   // 165.50
+let isOverdrawn = balance < 0; // false, a boolean
+
+console.log(balance, isOverdrawn);`,
+        explain:"`balance` and `deposit` are numeric variables. The third line reassigns `balance` using its own prior value — a pattern you'll see constantly in loops and counters. `isOverdrawn` stores the *result* of a comparison, not the comparison itself; the variable's type is boolean even though nothing about the name says so." },
+      exercise:{ prompt:"Trace the code by hand, then paste what you believe the two printed values are (comma-separated) into the left box, and paste the values you get by actually running an equivalent snippet in any interpreter into the right box, to confirm your trace matches execution.",
+        starter:`let x = 10;
+let y = x;
+x = x + 5;
+console.log(x, y);`,
+        expected:"15, 10", hint:"Reassigning x after y was already set does not change y — y was copied by value at the moment of assignment, not linked to x.",
+        concepts:["assignment vs. equality","copy-by-value","reassignment"],
+        solution:`x starts at 10. y is assigned x's current value (10) — a snapshot, not a link.
+x is then reassigned to 15. y still holds 10 because nothing re-copies it.
+Printed: 15, 10` },
+      checks:[
+        { stem:"What does the statement `count = count + 1` do?", diff:"easy", type:"mc",
+          opts:["Asserts that count equals count plus one, which is always false","Reads the current value of count, adds 1, and stores the result back into count","Creates a new variable called count","Throws an error because a variable can't appear on both sides"],
+          ans:1, rationale:"Assignment evaluates the right-hand side first using the current value, then stores the result under the name on the left. It's an instruction, not an algebraic claim.",
+          misconception:"Students coming from math class often try to 'solve' this as an equation and conclude it's contradictory — assignment and equality use the same symbol in many languages but mean different things." },
+        { stem:"`let z = 3; let w = z; z = 9;` — what is the value of w?", diff:"med", type:"mc",
+          opts:["9","3","undefined","It depends on the language"],
+          ans:1, rationale:"w was assigned a copy of z's value (3) at the time of assignment. Changing z afterward has no effect on w for primitive types.",
+          misconception:"Assuming variables are permanently linked after one is assigned from another — that behavior applies to references/objects in some languages, not to plain numeric or string values." },
+        { stem:"What does `\"5\" + 3` evaluate to in a language that performs implicit type coercion on the + operator?", diff:"med", type:"mc",
+          opts:["8, because both operands are converted to numbers","\"53\", because the string operand causes the number to be coerced into a string and concatenated","An error, since you can't mix types","5, because the string is ignored"],
+          ans:1, rationale:"When one operand of + is a string, many languages coerce the other operand to a string and concatenate rather than performing arithmetic — the presence of a string decides the operator's behavior.",
+          misconception:"Assuming + always means arithmetic addition regardless of operand types — its behavior is type-dependent, and mixing a string with a number is a common source of surprising output." },
+        { stem:"`let isAdult = age >= 18;` — what data type does isAdult hold after this line runs?", diff:"easy", type:"mc",
+          opts:["The same type as age, whatever that is","A boolean — true or false, the result of evaluating the comparison","A string representation of the comparison","An integer: 1 or 0"],
+          ans:1, rationale:"A comparison expression evaluates to a boolean value regardless of the types being compared. isAdult stores that boolean result, not a copy of age or the comparison text itself.",
+          misconception:"Assuming a variable's type is inherited from the variables used to compute it, rather than from the type of the expression's final result." },
+        { stem:"What is the difference between a literal and a variable in an expression like `total = price * 1.08`?", diff:"med", type:"mc",
+          opts:["There is no difference — both are variables","1.08 is a literal, a fixed value written directly into the code; price is a variable, a named reference to a value that can change","price is a literal because it doesn't change during this line","1.08 is a variable because it has a decimal point"],
+          ans:1, rationale:"A literal is a value written directly in the source code — it has no name and doesn't change. A variable is a named storage location whose value can be read or reassigned elsewhere in the program.",
+          misconception:"Using 'variable' loosely to mean 'any value in the code,' which blurs a distinction that matters once you're debugging — a literal can't be wrong at one point and right at another, but a variable's value can change between them." }
+      ]},
+
+    { id:"c1t2", title:"Control Structures: Conditionals & Loops",
+      teach:[
+        "A program that runs the same instructions in the same order every time is only useful for a narrow set of problems. Conditionals (`if` / `else if` / `else`) let a program pick which block of code to run based on a boolean condition, and loops (`while`, `for`) let it repeat a block until a condition changes.",
+        "The condition in an `if` statement must evaluate to a boolean. A frequent source of confusion is writing `if (x = 5)` instead of `if (x == 5)` in languages that allow it — the single `=` performs an assignment, the assignment expression evaluates to the assigned value, and that value gets coerced to true or false, silently changing what the program does.",
+        "Loops need three things to behave correctly: an initial state, a condition checked before each pass, and a way for that condition to eventually become false. Leave out the third piece — forget to update the loop variable, or update it in a way that never satisfies the exit condition — and you get an infinite loop. A `for` loop bundles all three pieces into one line specifically to make it harder to omit one."
+      ],
+      example:{ tag:"Worked example", code:
+`let total = 0;
+for (let i = 1; i <= 5; i = i + 1) {
+    total = total + i;
+}
+console.log(total);   // 15`,
+        explain:"The loop runs with i = 1, 2, 3, 4, 5 — five passes total. Each pass adds i's current value into total. The condition `i <= 5` is checked before every pass, including a final check with i = 6 that fails and ends the loop. This accumulator pattern (a variable that grows across iterations) shows up constantly: summing, counting, building a string." },
+      exercise:{ prompt:"Modify the accumulator loop above so it multiplies instead of adds, producing the factorial of 5 (5! = 120). Write your version in the left box; paste the actual output you get from running it in the right box.",
+        expected:"120", hint:"An accumulator for multiplication must start at 1, not 0 — starting a product accumulator at 0 forces every multiplication to stay 0.",
+        concepts:["loop initialization","accumulator pattern","off-by-one boundaries"],
+        solution:`let product = 1;
+for (let i = 1; i <= 5; i = i + 1) {
+    product = product * i;
+}
+console.log(product);  // 120` },
+      checks:[
+        { stem:"A while loop's exit condition never becomes false. What happens?", diff:"easy", type:"mc",
+          opts:["The language automatically stops it after 1000 iterations","The program runs the loop body forever (an infinite loop), typically until it's forcibly stopped or resources run out","It throws a syntax error before running","It runs once and then skips the rest of the program"],
+          ans:1, rationale:"A while loop only stops when its condition evaluates to false. If nothing in the loop body ever changes the variables that condition depends on, the check keeps passing indefinitely.",
+          misconception:"Assuming there's a built-in iteration cap — most languages have no such safety net; the responsibility for a valid exit condition is entirely on the programmer." },
+        { stem:"Why does `for (let i=1; i<=5; i++)` run 5 times rather than 4 or 6?", diff:"med", type:"mc",
+          opts:["Because for loops always run exactly 5 times by default","Because the condition is checked before each pass and i takes the values 1,2,3,4,5, each satisfying i<=5, with i=6 failing the check","Because i++ runs 5 times before the loop starts","Because the loop body has 5 lines"],
+          ans:1, rationale:"i starts at 1 and increments after each pass. The condition i<=5 is true for i=1 through i=5 and false the moment i becomes 6, so the loop body executes exactly five times.",
+          misconception:"Miscounting boundary loops — writing i<5 when 5 iterations were wanted, or i<=5 when only 4 were wanted, is one of the most common off-by-one mistakes in early coding." },
+        { stem:"In an if / else-if / else-if / else chain, once one branch's condition evaluates to true, what happens to the remaining conditions below it?", diff:"med", type:"mc",
+          opts:["They are all still checked, and the last true one wins","They are skipped entirely — the chain stops at the first true condition and runs only that branch","They run in addition to the first true branch","Branch order doesn't affect which one runs"],
+          ans:1, rationale:"An if/else-if chain evaluates conditions top to bottom and stops at the first one that's true, executing only that branch. Order matters — a more specific condition placed after a broader one that would also match it never gets reached.",
+          misconception:"Assuming every condition in the chain gets evaluated regardless, similar to a list of independent if statements — else-if chains short-circuit at the first match." },
+        { stem:"When is a while loop generally preferred over a for loop?", diff:"med", type:"mc",
+          opts:["While loops are always faster","When the number of iterations isn't known in advance and instead depends on a condition becoming true during execution, such as reading input until a sentinel value appears","For loops can't contain conditionals","While loops are required for arrays"],
+          ans:1, rationale:"A for loop's structure assumes you can state the iteration count or bound up front. A while loop fits situations where the pass count genuinely isn't known ahead of time — waiting for input, searching until a condition is met.",
+          misconception:"Treating for and while as interchangeable syntax choices with no situational difference, when the real distinction is whether the iteration count is knowable in advance." },
+        { stem:"In `if (age >= 18 && hasID)`, what happens if age >= 18 evaluates to false?", diff:"med", type:"mc",
+          opts:["hasID is still checked, and the result depends only on hasID","Most languages short-circuit: since the left side of && is false, the whole expression is already false and hasID is never evaluated","The program throws an error","&& requires both sides to be written as full if statements"],
+          ans:1, rationale:"The && operator short-circuits: if the left operand is false, the overall result can only be false regardless of the right operand, so many languages skip evaluating the right side entirely.",
+          misconception:"Assuming both sides of a logical operator are always evaluated — short-circuiting means the right side may never run at all, which matters if it contains a function call with side effects." }
+      ]},
+
+    { id:"c1t3", title:"Functions & Modular Design",
+      teach:[
+        "A function packages a sequence of steps under a name so it can be run again without retyping it. Parameters are placeholders the function declares; arguments are the actual values handed to it at call time. Confusing the two vocabulary terms is harmless, but confusing the *mechanics* — believing a function can somehow see variables from the code that called it, beyond what was passed in as arguments — causes real bugs.",
+        "A function's return value is the result it hands back to whoever called it. A function with no return statement doesn't fail; it simply returns an empty/undefined value, and code that tries to use that result downstream breaks in a way that's easy to misdiagnose because the function itself ran without error.",
+        "Breaking a program into small functions, each responsible for one clearly named task, is what 'modular design' means in practice. The test for whether a function is doing one job: can you describe what it does in a single sentence without using the word 'and'? `calculateTax` doing one thing is fine; `calculateTaxAndPrintReceiptAndUpdateDatabase` is three functions wearing one name tag."
+      ],
+      example:{ tag:"Worked example", code:
+`function applyDiscount(price, percentOff) {
+    let discount = price * (percentOff / 100);
+    return price - discount;
+}
+
+let finalPrice = applyDiscount(80, 25);
+console.log(finalPrice);   // 60`,
+        explain:"`price` and `percentOff` are parameters — names local to the function, meaningful only inside its body. When called with `(80, 25)`, those arguments are bound to the parameters for that one call. The function computes and returns a value; it does not print anything itself, which is deliberate — a function that both calculates and prints is harder to reuse in a context where you only need the number." },
+      exercise:{ prompt:"Write a function `isEven(n)` that returns true if n is divisible by 2 with no remainder, false otherwise, then call it with 17. Paste your function+call on the left, and the actual boolean result on the right.",
+        expected:"false", hint:"The remainder operator (% in most C-family languages) gives you what's left over after division — n % 2 is 0 for even numbers.",
+        concepts:["return values","modulo operator","boolean-returning functions"],
+        solution:`function isEven(n) {
+    return n % 2 === 0;
+}
+console.log(isEven(17));  // false` },
+      checks:[
+        { stem:"A function is defined `function greet(name) { message = \"Hi \" + name; }` — it has no return statement. What happens when you write `let x = greet(\"Sam\");`?", diff:"med", type:"mc",
+          opts:["x becomes the string \"Hi Sam\"","x becomes undefined, because the function never returns a value even though it built one internally","The program throws an error at the call site","x becomes the parameter name"],
+          ans:1, rationale:"Building a value inside a function and returning it are two separate steps. Without an explicit return, the function's call expression evaluates to undefined regardless of what happened inside.",
+          misconception:"Assuming the last expression evaluated inside a function is automatically what gets sent back to the caller — true in a few languages, false in most C-family and JavaScript-style languages, where return must be explicit." },
+        { stem:"Why is a single function that validates input, saves it to a database, and emails a confirmation considered poor modular design?", diff:"hard", type:"mc",
+          opts:["It will run slower than three separate functions","It's harder to test, reuse, and reason about in isolation, and a failure in one responsibility is harder to trace to its source","JavaScript enforces a hard limit on function length","Functions can only call one operation each by language rule"],
+          ans:1, rationale:"Bundling unrelated responsibilities means you can't reuse the validation logic without also triggering an email, can't test the database write without a live email service, and a bug report about 'confirmation emails not sending' might actually be a validation failure two steps upstream.",
+          misconception:"Treating modularity as a stylistic preference rather than something that changes how findable and fixable a bug is." },
+        { stem:"A function is defined `function greet(name = \"friend\") { return \"Hi \" + name; }`. What does `greet()` (called with no argument) return?", diff:"med", type:"mc",
+          opts:["An error, since name has no value","\"Hi friend\", because the default parameter value is used when no argument is supplied","\"Hi undefined\"","\"Hi \" with nothing appended"],
+          ans:1, rationale:"A default parameter value is used whenever the caller omits that argument. It only applies when the argument is missing — passing any value, even an empty string, would override the default.",
+          misconception:"Assuming a missing argument always produces an error rather than falling back to a declared default, or assuming defaults apply even when a value was explicitly passed." },
+        { stem:"A recursive function calls itself but has no base case — no condition under which it stops calling itself. What happens when it runs?", diff:"med", type:"mc",
+          opts:["It runs once and returns normally","It calls itself indefinitely until it crashes, typically with a stack overflow error","It automatically detects the missing base case and stops safely","Recursion without a base case is a syntax error"],
+          ans:1, rationale:"Without a base case, a recursive function has no condition that ever stops it from calling itself again. Each call adds another frame to the call stack until the stack's size limit is exceeded and the program crashes.",
+          misconception:"Assuming the language or runtime will detect an infinite recursive pattern and intervene — most languages simply keep calling until the stack overflows." },
+        { stem:"A variable declared inside a function body — is it accessible from code outside that function?", diff:"easy", type:"mc",
+          opts:["Yes, all variables are accessible everywhere in the program","No, a variable declared inside a function is local to that function and doesn't exist outside its body once the function returns","Only if the function has a return statement","Only if the variable is declared first in the file"],
+          ans:1, rationale:"Local variables exist only within the scope they're declared in. Once a function finishes executing, its local variables are gone; outside code has no way to reference them by name.",
+          misconception:"Assuming a variable declared anywhere in a program is visible everywhere — scope rules restrict a local variable's visibility to the block or function it was declared in." }
+      ]},
+
+    { id:"c1t4", title:"Arrays, Lists & Iteration",
+      teach:[
+        "An array (or list, depending on the language) stores an ordered sequence of values under one variable name, each accessible by a numeric index. Most languages used in this course index from 0, meaning the first element is at position 0, and the last element of an array with `n` items sits at position `n - 1` — not `n`. Reaching for index `n` is the single most common cause of an out-of-bounds error.",
+        "Iterating over an array means visiting each element in turn, usually with a loop whose counter tracks the current index. The loop's exit condition for array iteration is almost always `i < array.length`, using strictly-less-than specifically because the valid indices stop one short of the length.",
+        "Arrays support operations beyond simple indexing: searching for a value, filtering to a subset that matches a condition, and transforming each element into something new. Understanding these as three distinct operations — even before learning language-specific shortcuts for them — clarifies what a piece of code is actually trying to accomplish."
+      ],
+      example:{ tag:"Worked example", code:
+`let scores = [72, 88, 91, 60, 79];
+let passing = [];
+
+for (let i = 0; i < scores.length; i = i + 1) {
+    if (scores[i] >= 70) {
+        passing.push(scores[i]);
+    }
+}
+console.log(passing);   // [72, 88, 91, 79]`,
+        explain:"The loop visits every index from 0 through scores.length - 1 (that's 0 through 4, five elements). Inside, a conditional filters which values get copied into a second array. Nothing about this pattern is specific to grades — it's the general shape of 'walk a list, keep what matches a rule,' and it reappears constantly." },
+      exercise:{ prompt:"Given the array [4, 15, 7, 22, 9], write a loop that finds and returns the largest value without using a built-in max function. Paste your code on the left, the value you get on the right.",
+        expected:"22", hint:"Start a variable at the first element (index 0), then compare it against every other element, replacing it whenever you find something larger.",
+        concepts:["array indexing","iteration","running comparison"],
+        solution:`let nums = [4, 15, 7, 22, 9];
+let largest = nums[0];
+for (let i = 1; i < nums.length; i = i + 1) {
+    if (nums[i] > largest) {
+        largest = nums[i];
+    }
+}
+console.log(largest);  // 22` },
+      checks:[
+        { stem:"An array `let arr = [10, 20, 30];` — what does `arr[3]` return?", diff:"easy", type:"mc",
+          opts:["undefined or an out-of-bounds error, since valid indices only run 0 through 2","30, the last element","The array's length","10, wrapping back to the first element"],
+          ans:0, rationale:"An array with 3 elements has valid indices 0, 1, and 2. Index 3 is one past the last valid position, so it returns undefined in some languages or throws an error in others — but never a valid element.",
+          misconception:"Assuming the index equal to the array's length points to the last element, when it actually points one position past it." },
+        { stem:"Why does array iteration typically use `i < array.length` rather than `i <= array.length`?", diff:"med", type:"mc",
+          opts:["Both work identically","Using <= would attempt to access one index past the last valid element on the final pass","<= is invalid syntax in most languages","length always equals the last valid index"],
+          ans:1, rationale:"If an array has length 5, its valid indices are 0-4. `i <= 5` would let the loop attempt index 5, which is out of bounds — exactly the off-by-one mistake that <length is designed to avoid.",
+          misconception:"Conflating an array's length (a count of elements) with its highest valid index (count minus one)." },
+        { stem:"After `let arr = [1,2,3]; arr.push(4);`, what is arr.length?", diff:"easy", type:"mc",
+          opts:["3, because push doesn't change length","4, because push appends a new element to the end and length reflects the new count","5, push adds two slots","It depends on the data type of 4"],
+          ans:1, rationale:"push adds one new element to the end of the array. The array now holds 4 elements, so length updates from 3 to 4 to stay accurate.",
+          misconception:"Assuming length is a fixed property set once at creation rather than a live count that updates automatically as elements are added or removed." },
+        { stem:"A search function looks for a value in an array and doesn't find it. What should it typically return, and why does that matter?", diff:"med", type:"mc",
+          opts:["It should return 0, since that's a neutral number","A clear not-found signal such as -1 or null, distinct from any valid index or result, so calling code can tell the difference between 'found at position 0' and 'not found'","It should throw an error every time","It doesn't matter what it returns as long as it returns something"],
+          ans:1, rationale:"If a not-found result used 0 or any valid index as its signal, calling code couldn't distinguish 'found at index 0' from 'not found at all' — a classic source of a logic error that only shows up for elements at the start of the array.",
+          misconception:"Picking a not-found sentinel value that overlaps with legitimately valid results, which silently breaks the specific case where the real answer happens to match the sentinel." },
+        { stem:"A for loop iterates `for (let i=0; i<arr.length; i++)` over an empty array (`arr = []`). How many times does the loop body run?", diff:"easy", type:"mc",
+          opts:["Zero times, since arr.length is 0 and the condition i<0 is false immediately on the first check","Once, to at least check the array","It throws an error on an empty array","Infinitely, since there's nothing to iterate toward"],
+          ans:0, rationale:"With arr.length equal to 0, the condition i<arr.length is i<0, which is false the very first time it's checked (i starts at 0). The loop body never executes — this is correct, expected behavior, not an error.",
+          misconception:"Assuming a loop must run at least once regardless of the condition — a for or while loop's condition is checked before each pass, including the very first one, so a false condition from the start means zero executions." }
+      ]},
+
+  ]},
+
+  c2: { name:"C2 · Troubleshooting & Debugging", short:"C2", color:"var(--c2)", topics: [
+
+    { id:"c2t1", title:"Categories of Errors: Syntax, Runtime, Logic",
+      teach:[
+        "Syntax errors are violations of the language's grammar — a missing parenthesis, an unclosed string, a misspelled keyword. The program won't run at all; most environments catch these before execution and point at the offending line, which makes them the easiest category to fix even though they're often the most frustrating for beginners to spot by eye.",
+        "Runtime errors occur while the program is executing: dividing by zero, calling a method on a value that's null or undefined, reading past the end of an array. The syntax was valid, so the program starts running, then halts partway through when it hits an operation it cannot complete.",
+        "Logic errors are the hardest category, because the program runs from start to finish without crashing and produces an answer — the answer is just wrong. No error message points at the problem; the only signal is output that doesn't match expectations, which is why testing against known correct results matters as much as getting code to simply run without complaint."
+      ],
+      example:{ tag:"Worked example: same bug, three disguises", code:
+`// Syntax error — missing closing parenthesis
+if (x > 5 {
+    console.log("big");
+}
+
+// Runtime error — dividing by a variable that can be 0
+let average = total / count;   // count is 0 here
+
+// Logic error — runs fine, wrong formula
+let areaOfCircle = radius * radius * 3;   // should be * Math.PI`,
+        explain:"All three examples are 'wrong' but in fundamentally different ways. The first never runs. The second runs partway then crashes at that specific line, with a stack trace pointing to it. The third runs to completion and prints a plausible-looking number that is simply incorrect — 3 instead of roughly 3.14159 is a subtle enough substitution that it can survive a casual read-through of the code." },
+      exercise:{ prompt:"For each of these three snippets, decide which category — syntax, runtime, or logic — the error belongs to, then paste your three answers as a comma-separated list on the left. Snippets: (1) `let y = arr[10]` where arr only has 3 elements, (2) `for (let i=0; i<10 i++)`, (3) a tax calculator that always applies a 5% rate regardless of income bracket. Paste what you'd expect from testing each on the right.",
+        expected:"runtime, syntax, logic",
+        hint:"Ask: does it fail to run at all (syntax), crash partway through (runtime), or run to completion with a wrong answer (logic)?",
+        concepts:["error taxonomy","diagnostic reasoning"],
+        solution:`1. arr[10] on a 3-element array: RUNTIME — valid syntax, crashes when that line executes.
+2. missing semicolon between i<10 and i++ inside the for(): SYNTAX — the parser rejects it before anything runs.
+3. flat 5% rate ignoring brackets: LOGIC — runs fine, returns a number, the number is simply wrong.` },
+      checks:[
+        { stem:"A program crashes with 'Cannot read property of null' halfway through execution. What category is this?", diff:"easy", type:"mc",
+          opts:["Syntax error","Runtime error","Logic error","Compilation error only"],
+          ans:1, rationale:"The program's grammar was valid enough to start running, and it failed midway when it tried to operate on a null value — the defining trait of a runtime error.",
+          misconception:"Labeling every crash a 'syntax error' regardless of when it happens — syntax errors specifically prevent the program from starting at all." },
+        { stem:"A grading script runs without any errors but assigns every student a B regardless of their actual score. What should you check first?", diff:"med", type:"mc",
+          opts:["Check for missing semicolons","Check the conditional logic and thresholds that assign letter grades, since this is a logic error with no crash to point at","Check whether the file was saved","Restart the computer, since it's likely a memory issue"],
+          ans:1, rationale:"No crash occurred and the program completed, which rules out syntax and runtime errors by definition. The wrong-but-consistent output is the signature of a logic error — most often a comparison operator, boundary value, or branch ordering mistake in the grading conditionals.",
+          misconception:"Reflexively blaming the environment (memory, save state) when output is simply incorrect rather than examining the decision logic that produced it." },
+        { stem:"Which category of error is typically caught by the language's parser before the program ever begins executing?", diff:"easy", type:"mc",
+          opts:["Logic errors","Runtime errors","Syntax errors, since the parser checks grammar before execution starts","All three are caught at the same stage"],
+          ans:2, rationale:"Syntax errors violate the language's grammar rules, and most environments check grammar during parsing, before a single line actually executes. Runtime and logic errors both require the program to actually be running to manifest.",
+          misconception:"Assuming all error types are detected at the same stage — the fact that a program starts running at all already rules out a syntax error as the cause." },
+        { stem:"A loop that never terminates because its exit condition is never satisfied — which error category does this fall under?", diff:"med", type:"mc",
+          opts:["Syntax error, since the loop is malformed","Logic error, since the program runs (and keeps running) without crashing, but never reaches a correct stopping point","Runtime error, since it always crashes eventually","It isn't an error at all if the loop body has valid syntax"],
+          ans:1, rationale:"An infinite loop is syntactically valid and doesn't throw a runtime exception on its own — it simply never satisfies the condition that was supposed to end it. That's a flaw in the program's logic, not its grammar or an operation it couldn't complete.",
+          misconception:"Assuming any long-running or broken-seeming program must be a runtime error — a runtime error specifically means an operation failed and halted execution, which an infinite loop, by definition, never does." },
+        { stem:"A program throws 'division by zero' at line 40. Is this a runtime error even though the program has valid syntax and otherwise sound logic elsewhere?", diff:"med", type:"mc",
+          opts:["No, any crash is automatically a logic error","Yes — the syntax was valid enough to start running, and it failed midway attempting an operation (division by zero) it could not complete","No, division problems are always syntax errors","Yes, but only if it happens inside a loop"],
+          ans:1, rationale:"The program successfully started and ran up to line 40, which rules out a syntax error. It then failed attempting a specific operation it couldn't complete — the textbook definition of a runtime error, regardless of whether the surrounding logic is otherwise correct.",
+          misconception:"Assuming a crash automatically implies flawed overall logic — a single unguarded operation, like a division that happens to hit a zero denominator on some particular input, can trigger a runtime error inside code that is otherwise logically sound." }
+      ]},
+
+    { id:"c2t2", title:"A Systematic Debugging Process",
+      teach:[
+        "Debugging by randomly changing lines until something works is slower than it feels, because it discards information every time it 'accidentally' fixes something without explaining why. A repeatable process trades that speed illusion for actual understanding, and it generalizes across languages and problem types.",
+        "The process has a consistent shape: reproduce the bug reliably first — a bug you can't trigger on demand can't be verified as fixed. Then isolate: narrow down which section of code is responsible, typically by checking intermediate values rather than staring at the whole program. Then form a hypothesis about the cause, specific enough that you could be wrong. Then test that hypothesis with the smallest possible change. Then verify the original bug is actually gone, not just quieter.",
+        "Isolation is usually the step people skip, jumping straight from 'something's wrong' to 'let me try changing this' without first narrowing down where the fault actually lives. Binary search applies here the same way it does to sorted arrays: if a program has ten steps and produces a wrong result, checking the value after step 5 tells you whether the bug is in the first half or second half, cutting the search space roughly in two with a single check."
+      ],
+      example:{ tag:"Worked example: isolating with checkpoints", code:
+`function processOrder(items) {
+    let subtotal = calculateSubtotal(items);   // checkpoint A
+    let tax = calculateTax(subtotal);          // checkpoint B
+    let total = subtotal + tax;                // checkpoint C
+    return total;
+}
+// Bug report: total is way too high.
+// Check subtotal at A: correct.
+// Check tax at B: way too high — found it.`,
+        explain:"Rather than reading all three functions end to end guessing which one is wrong, the process checks the intermediate value at each checkpoint in order. Subtotal checks out, so calculateSubtotal is cleared as a suspect. Tax does not check out, so the search is now confined to calculateTax — a much smaller space to actually read carefully." },
+      exercise:{ prompt:"A function `computeGrade(score)` is returning 'F' for a score of 75, which should be a 'C'. Below is the buggy function. Trace it by hand, write down which specific line is wrong on the left, and what the corrected condition should read on the right.",
+        starter:`function computeGrade(score) {
+    if (score >= 90) return "A";
+    if (score >= 80) return "B";
+    if (score > 70) return "C";
+    if (score >= 60) return "D";
+    return "F";
+}`,
+        expected:'if (score >= 70) return "C";',
+        hint:"75 is greater than 70, so `score > 70` should already catch it and return C — trace it again more slowly and check every branch above that line too.",
+        concepts:["boundary conditions","branch ordering","hand tracing"],
+        solution:`Trace computeGrade(75):
+90? no. 80? no. score > 70 → 75 > 70 is TRUE... so this actually should return "C".
+The real bug: re-examine — if this were returning "F" for 75, the likely typo is
+"score > 70" accidentally written as "score > 170" or similar, or the branches
+are ordered/typo'd elsewhere. The teaching point: trace every branch explicitly
+rather than assuming the visible code matches what you expect it to say.` },
+      checks:[
+        { stem:"Why is reliably reproducing a bug the recommended first step, before trying to fix it?", diff:"easy", type:"mc",
+          opts:["It isn't necessary — you can fix bugs without ever seeing them happen","Without a reliable way to trigger the bug, you have no way to confirm afterward whether your fix actually worked or the bug just didn't happen to occur this time","It makes the code run faster","It's only needed for runtime errors, not logic errors"],
+          ans:1, rationale:"A fix you can't verify is a guess. If you can't make the bug happen on command, you also can't tell the difference between 'fixed' and 'didn't happen to trigger this time,' which is how bugs quietly come back later.",
+          misconception:"Treating verification as optional once a plausible-looking fix has been applied." },
+        { stem:"A program has 8 sequential processing steps and produces a wrong final result. What's the most efficient isolation strategy?", diff:"med", type:"mc",
+          opts:["Read all 8 steps in order from the top until something looks wrong","Check the intermediate value after step 4 first, then narrow to the half that's actually incorrect, repeating until you isolate one step","Rewrite all 8 steps from scratch","Add more print statements to every single line simultaneously"],
+          ans:1, rationale:"Checking a midpoint value first and narrowing based on whether it's correct halves the search space with each check — the same binary-search logic used for sorted data, applied to a sequence of computation steps instead.",
+          misconception:"Assuming debugging must proceed linearly from the first line of code, which is often the slowest possible search order for a long pipeline." },
+        { stem:"Why should a debugging hypothesis be specific enough that it could turn out to be wrong?", diff:"med", type:"mc",
+          opts:["Specificity doesn't matter, any guess will do","A vague hypothesis like 'something's off with the data' can't be tested or ruled out, while a specific one like 'the tax function is using the wrong rate constant' can be checked directly and either confirmed or eliminated","Specific hypotheses are always correct","Vague hypotheses are faster to test"],
+          ans:1, rationale:"A hypothesis that can't fail isn't actually testable — it just restates that something is wrong without narrowing down what. A specific, falsifiable hypothesis gives you a concrete check to run, which either confirms the cause or eliminates it and redirects the search.",
+          misconception:"Treating any guess as equally useful — the value of a hypothesis comes from its specificity, since only a specific claim can be checked against evidence and ruled out if wrong." },
+        { stem:"After applying a fix, why is it important to re-run the original reproduction steps rather than just moving on?", diff:"easy", type:"mc",
+          opts:["It isn't important once the code looks right","To confirm the specific bug is actually gone, not just that the code compiles or a different symptom quieted down","Re-running steps is only needed for syntax errors","It's a formality with no real diagnostic value"],
+          ans:1, rationale:"A fix can look correct by inspection and still fail to address the actual reported behavior, or it can fix a symptom while leaving the root cause intact. Re-running the original reproduction steps is the only direct confirmation that the specific reported bug no longer occurs.",
+          misconception:"Equating 'the code runs without crashing' with 'the bug is fixed' — those are different claims, and only re-testing the original scenario verifies the second one." },
+        { stem:"When testing a debugging hypothesis, why is making the smallest possible change preferable to changing several things at once?", diff:"med", type:"mc",
+          opts:["Smaller changes are always faster to type","If several things change at once and the bug goes away, you can't tell which change actually fixed it — or whether a new problem was introduced alongside the fix","It isn't preferable — more changes fix more bugs at once","Small changes don't need to be tested"],
+          ans:1, rationale:"Changing multiple things simultaneously confounds the test: if the bug disappears, you don't actually know which change was responsible, and you may have masked the real cause or introduced a new issue that happens to look like progress.",
+          misconception:"Treating a debugging session as a chance to 'clean up' several suspicious-looking things at once — each simultaneous change removes your ability to attribute the outcome to a specific cause." }
+      ]},
+
+    { id:"c2t3", title:"Reading Stack Traces & Trace/Print Debugging",
+      teach:[
+        "A stack trace is the record a program prints when it crashes, listing the chain of function calls active at the moment of failure — usually with the most recent call (where the crash actually happened) at the top and the original entry point at the bottom. Reading a stack trace top-down tells you exactly which line failed and which sequence of calls led there.",
+        "New programmers often see a wall of unfamiliar text in a stack trace and skip straight to searching the error message online, missing the file name and line number sitting right there in their own code. The trace is pointing at a specific location; that location is almost always where to start looking, even when the actual root cause turns out to be a few calls further up the chain.",
+        "Print/trace debugging — inserting temporary output statements to display a variable's value at a specific point in execution — is a blunt but genuinely effective technique, especially for logic errors that don't produce a stack trace at all. The discipline that makes it work is being specific: printing a labeled value at a chosen checkpoint, rather than scattering unlabeled prints everywhere and losing track of which output came from where."
+      ],
+      example:{ tag:"Worked example: reading a trace", code:
+`TypeError: Cannot read properties of undefined (reading 'price')
+    at calculateTotal (cart.js:14)
+    at checkout (cart.js:27)
+    at main (app.js:8)`,
+        explain:"Read top to bottom: the actual failure happened inside calculateTotal, at line 14 of cart.js, trying to read a `.price` property off something that was undefined. checkout called calculateTotal (line 27), and main called checkout (line 8). Start at line 14 — something being passed into calculateTotal doesn't have the shape the function expects, most likely a cart item missing a price field." },
+      exercise:{ prompt:"A function is producing an unexpected total but throws no error. Add print statements to the code below at the marked checkpoint to reveal the running total after each item, then paste your instrumented code on the left and the printed sequence you'd expect on the right, for items = [10, 20, 30].",
+        starter:`function sumItems(items) {
+    let total = 0;
+    for (let i = 0; i < items.length; i++) {
+        total += items[i];
+        // add a print here
+    }
+    return total;
+}`,
+        expected:"10, 30, 60",
+        hint:"Insert `console.log(total)` right after the accumulation line, inside the loop, so it fires once per iteration.",
+        concepts:["print/trace debugging","checkpoint placement","accumulator tracing"],
+        solution:`function sumItems(items) {
+    let total = 0;
+    for (let i = 0; i < items.length; i++) {
+        total += items[i];
+        console.log(total);   // prints 10, then 30, then 60
+    }
+    return total;
+}` },
+      checks:[
+        { stem:"In a stack trace, which line typically identifies the exact file and line number where the crash occurred?", diff:"easy", type:"mc",
+          opts:["The bottom-most line, since traces read bottom-up","The top-most line, since traces list the most recent (innermost) call first","Whichever line has the word 'Error' in it","Stack traces don't include line numbers"],
+          ans:1, rationale:"Stack traces list calls from most recent to least recent. The top line is where the program actually was when it crashed; lines below it show the chain of calls that led there.",
+          misconception:"Reading a stack trace bottom-up out of habit from reading code top-down — traces are ordered the opposite way, innermost failure first." },
+        { stem:"Print/trace debugging is especially useful for which category of error?", diff:"med", type:"mc",
+          opts:["Syntax errors, since prints reveal missing punctuation","Logic errors, which produce no crash or stack trace to point at a location","Runtime errors only, since they always include a trace already","It's not useful for any category — only a debugger tool works"],
+          ans:1, rationale:"Logic errors run to completion with no error message at all. Since there's no stack trace to consult, printed checkpoint values are often the only way to see where the computed values diverge from what's expected.",
+          misconception:"Assuming print debugging is a 'beginner crutch' inferior to a debugger in every case — for tracing a value's evolution across a loop, a well-placed print is often faster to set up than stepping through a debugger." },
+        { stem:"A stack trace lists five lines below the top one, each from a different function. What do those five lines represent?", diff:"med", type:"mc",
+          opts:["Five separate errors that all happened at once","The chain of function calls that were active leading up to the crash, each call still 'on the stack' waiting for the one below it to return","Five different possible fixes","Unrelated warnings that can be ignored"],
+          ans:1, rationale:"A stack trace shows the call chain, not multiple errors — each line is a function call still active (not yet returned) at the moment the crash occurred, going from the innermost failing call at the top down to the original entry point.",
+          misconception:"Interpreting each line of a stack trace as a distinct problem to fix individually, rather than a single chain of calls leading to one point of failure." },
+        { stem:"Why is it good practice to remove temporary print/trace statements once a bug is fixed, rather than leaving them in?", diff:"easy", type:"mc",
+          opts:["Print statements slow the language's parser down permanently","Leftover debug output clutters real program output and can make it harder to spot genuinely important messages later, including during the next debugging session","It's not good practice — leaving them in is always preferred","Print statements cause syntax errors if left in too long"],
+          ans:1, rationale:"Temporary prints served their purpose once the bug was located and confirmed fixed. Left in place, they mix debug noise into normal output, which makes future debugging sessions slower since real signal has to be picked out from leftover clutter.",
+          misconception:"Treating debug prints as harmless to leave behind — accumulated leftover prints across many past debugging sessions can make a program's output nearly unreadable." },
+        { stem:"A stack trace's top line points into a third-party library file rather than your own code. Where should you generally look first?", diff:"hard", type:"mc",
+          opts:["Assume the library itself is broken and stop debugging","Check the line in your own code just below the library call in the trace — that's usually where a bad value was passed into the library in the first place","Ignore the trace entirely since it's not your code","Rewrite the library from scratch"],
+          ans:1, rationale:"Well-established libraries are rarely the actual root cause. The trace's next line down, in your own code, usually shows where the library function was called — and that's typically where an unexpected or malformed value was passed in, triggering the failure inside the library.",
+          misconception:"Assuming a crash inside a library's file means the library is at fault, when the far more common cause is bad input handed to it from the calling code." }
+      ]},
+
+    { id:"c2t4", title:"Common Bug Patterns & Defensive Coding",
+      teach:[
+        "A handful of bug shapes recur across almost every language and codebase, which makes them worth recognizing by pattern rather than re-deriving each time. Off-by-one errors — a loop that runs one time too many or too few, an index that's one position off — come from boundary conditions, usually a stray `<=` where `<` belongs or vice versa.",
+        "Null/undefined reference errors happen when code assumes a value exists — a lookup succeeded, an object has a field, a function returned something usable — without checking. The fix isn't to avoid null values entirely; it's to check for them explicitly at the boundary where an operation might not have produced one, rather than assuming success everywhere downstream.",
+        "Defensive coding means writing code that fails loudly and close to the actual problem instead of silently producing wrong results far downstream. A validation check at the top of a function that rejects bad input immediately, with a clear message, turns what would have been a mysterious logic error three functions later into an obvious, immediately traceable one."
+      ],
+      example:{ tag:"Worked example: defensive check", code:
+`// Fragile: assumes user always exists
+function getUserEmail(user) {
+    return user.email;
+}
+
+// Defensive: fails clearly and immediately if the assumption breaks
+function getUserEmail(user) {
+    if (!user) {
+        throw new Error("getUserEmail called with no user object");
+    }
+    return user.email;
+}`,
+        explain:"The fragile version, given `undefined` instead of a real user object, crashes with a generic 'cannot read property of undefined' error somewhere that may be several calls removed from where the bad value actually originated. The defensive version fails at the exact point the bad assumption was made, with a message that names the function and the problem, cutting debugging time considerably." },
+      exercise:{ prompt:"The function below crashes when called with an empty array. Add a defensive check that returns 0 for an empty array instead of crashing, and paste your corrected function on the left, with the output for averageOf([]) on the right.",
+        starter:`function averageOf(nums) {
+    let sum = 0;
+    for (let i = 0; i < nums.length; i++) {
+        sum += nums[i];
+    }
+    return sum / nums.length;
+}`,
+        expected:"0",
+        hint:"Dividing by nums.length when the array is empty divides by 0. Add a check at the top: if the array has no elements, return 0 immediately before the loop runs.",
+        concepts:["defensive coding","edge cases","division by zero"],
+        solution:`function averageOf(nums) {
+    if (nums.length === 0) {
+        return 0;
+    }
+    let sum = 0;
+    for (let i = 0; i < nums.length; i++) {
+        sum += nums[i];
+    }
+    return sum / nums.length;
+}` },
+      checks:[
+        { stem:"What is the defining trait of an off-by-one error?", diff:"easy", type:"mc",
+          opts:["The program crashes on startup","A loop or index is exactly one position too far in one direction, often from a boundary comparison like < versus <=","The program uses the wrong data type","The variable name is misspelled"],
+          ans:1, rationale:"Off-by-one errors are specifically boundary mistakes — running an extra iteration, stopping one short, or reading one index past or before where you meant to.",
+          misconception:"Lumping all indexing or loop bugs together as 'off-by-one' when some are actually a different root cause, like an uninitialized counter — precision in naming the bug type speeds up finding it." },
+        { stem:"Why does a defensive check that throws immediately with a clear message reduce debugging time compared to letting a bad value propagate?", diff:"med", type:"mc",
+          opts:["It doesn't — it just adds more code to maintain","It surfaces the problem at its origin instead of letting it resurface later as a confusing crash or wrong result several function calls downstream","It makes the program run faster","It automatically fixes the bad value"],
+          ans:1, rationale:"When bad input is caught immediately at the point it enters a function, the error message points directly at the actual source. Left unchecked, that same bad value can travel through several more functions before finally causing a crash somewhere that has nothing to do with where the problem started.",
+          misconception:"Viewing input validation as unnecessary overhead rather than as a debugging-time investment that pays off the first time a bad value shows up in production." },
+        { stem:"A nested loop uses the same loop variable name `i` for both the outer and inner loop, without properly scoping each to its own block. What's the likely consequence?", diff:"hard", type:"mc",
+          opts:["No consequence, languages handle this automatically","The inner loop can overwrite the outer loop's counter, corrupting the outer loop's iteration once control returns to it","It causes a syntax error every time","It only matters if the loops run more than 100 times"],
+          ans:1, rationale:"If both loops share one mutable variable named i without proper block scoping, the inner loop's changes to i persist after it finishes, so the outer loop resumes with a corrupted counter — a bug pattern that's easy to introduce by copy-pasting loop code without renaming the inner variable.",
+          misconception:"Assuming variable name reuse across nested scopes is automatically safe — it depends entirely on whether the language and syntax used actually give each loop its own separate variable rather than sharing one." },
+        { stem:"Comparing two floating-point numbers with `==` for exact equality (e.g., `0.1 + 0.2 == 0.3`) sometimes returns false unexpectedly. Why?", diff:"hard", type:"mc",
+          opts:["It's a bug in the language that will eventually be fixed","Floating-point numbers are stored in a binary format that can't represent most decimal fractions exactly, so tiny rounding differences accumulate and break exact equality checks","== doesn't work on numbers at all","0.1 and 0.2 are stored as strings, not numbers"],
+          ans:1, rationale:"Binary floating-point representation can't exactly store most decimal fractions, so arithmetic on them accumulates small rounding errors. Comparing for exact equality after such arithmetic often fails even when the values are mathematically equal, which is why comparing against a small tolerance range is the standard workaround.",
+          misconception:"Treating unexpected floating-point comparison results as a language bug rather than an inherent, well-documented property of how floating-point numbers are represented in memory." },
+        { stem:"A function silently catches an error and returns a default value with no logging or message, instead of letting it surface. What's the risk of this pattern?", diff:"med", type:"mc",
+          opts:["There's no risk — silent handling is always safer","The real failure becomes invisible, so a genuine problem can persist undetected for a long time, surfacing later as a confusing symptom far from its actual cause","It makes the program run faster","It automatically fixes the underlying error"],
+          ans:1, rationale:"Swallowing an error without any trace of it happening means there's no signal that something went wrong at all. The problem doesn't disappear — it just becomes invisible at the point it occurred, likely to resurface later as a much harder to diagnose symptom.",
+          misconception:"Equating 'the program didn't crash' with 'the program is working correctly' — silently handled errors can mask real problems for a long time before they become visible in a much more confusing form." }
+      ]},
+
+  ]},
+
+  c3: { name:"C3 · Relational Databases & SQL", short:"C3", color:"var(--c3)", topics: [
+
+    { id:"c3t1", title:"The Relational Model: Tables, Keys & Relationships",
+      teach:[
+        "A relational database organizes data into tables, each representing one kind of entity — students, courses, enrollments — with rows as individual records and columns as the attributes every record shares. The word 'relational' refers to how tables relate to each other through shared columns, not to the everyday sense of 'relationship.'",
+        "A primary key is a column (or combination of columns) that uniquely identifies each row in a table — no two rows share the same value, and it's never left empty. A foreign key is a column in one table that holds a primary key value from another table, and that's the actual mechanism that connects related data across tables rather than duplicating it everywhere it's needed.",
+        "The reason to split data into separate related tables instead of one giant flat table is to avoid repeating the same information in multiple rows. Storing a student's full name and email on every single enrollment row means updating that student's email requires finding and changing every row that mentions them; storing student details once in a Students table and referencing that student by ID from an Enrollments table means the update happens in exactly one place."
+      ],
+      example:{ tag:"Worked example: two related tables", code:
+`Students                        Enrollments
++----+----------+--------+       +----+------------+---------+
+| id | name     | email  |       | id | student_id | course  |
++----+----------+--------+       +----+------------+---------+
+| 1  | A. Ruiz  | a@..   |       | 1  | 1          | CS101   |
+| 2  | B. Chen  | b@..   |       | 2  | 1          | MATH210 |
++----+----------+--------+       | 3  | 2          | CS101   |
+                                  +----+------------+---------+`,
+        explain:"`Students.id` is that table's primary key. `Enrollments.student_id` is a foreign key — it holds values that reference `Students.id`, which is how row 1 and row 2 of Enrollments both point back to A. Ruiz without ever storing her name or email a second time. Change her email once in Students, and every enrollment referencing student_id 1 reflects that change automatically the next time it's looked up." },
+      exercise:{ prompt:"Using the two tables above, write down (on the left) which student is enrolled in MATH210, tracing the foreign key relationship manually. Then write the SQL query that would answer the same question (on the right).",
+        expected:"A. Ruiz",
+        hint:"Find the Enrollments row where course = 'MATH210', read its student_id, then look up that id in the Students table.",
+        concepts:["primary key","foreign key","manual join tracing"],
+        solution:`Enrollments row with course='MATH210' has student_id = 1.
+Students row with id = 1 is A. Ruiz.
+
+SELECT s.name
+FROM Students s
+JOIN Enrollments e ON s.id = e.student_id
+WHERE e.course = 'MATH210';` },
+      checks:[
+        { stem:"What makes a column a valid primary key for a table?", diff:"easy", type:"mc",
+          opts:["It must be a number","Every row must have a unique, non-empty value in that column","It must be the first column in the table","It must be named 'id'"],
+          ans:1, rationale:"The defining requirement of a primary key is uniqueness and completeness — every row has one, and no two rows share the same value. The data type and column name are conventions, not requirements.",
+          misconception:"Assuming a primary key must literally be named 'id' or must be numeric — an email address or a combination of columns can serve as a primary key as long as uniqueness holds." },
+        { stem:"Why store student information once in a Students table rather than repeating name and email on every Enrollments row?", diff:"med", type:"mc",
+          opts:["It makes queries run in alphabetical order","It avoids duplicated data, so updating a student's information happens in one place instead of requiring every row that mentions them to be found and changed","Foreign keys require it by syntax rule","It reduces the number of tables the database can have"],
+          ans:1, rationale:"This is the core motivation behind normalization: each fact lives in exactly one place. A foreign key reference lets related tables point at that single source of truth instead of copying it, which is what keeps an update from turning into a multi-row hunt-and-fix.",
+          misconception:"Treating table-splitting as an arbitrary organizational preference rather than a direct defense against update inconsistency." },
+        { stem:"Can a primary key consist of more than one column?", diff:"med", type:"mc",
+          opts:["No, a primary key must always be a single column","Yes — a composite primary key uses two or more columns together, where the combination is unique even if no single column alone is","No, only foreign keys can span multiple columns","Yes, but only in NoSQL databases"],
+          ans:1, rationale:"A composite key uses the combination of two or more columns to guarantee uniqueness, useful when no single column is unique on its own — a table tracking enrollments might use (student_id, course_id) together, since each specific pairing should appear once even though neither column alone is unique.",
+          misconception:"Assuming a primary key must always be a single simple column — many real schemas use composite keys where uniqueness only holds across a combination of fields." },
+        { stem:"What problem is normalization (splitting data into related tables) primarily designed to prevent?", diff:"med", type:"mc",
+          opts:["Slow query performance","Redundant, duplicated data that can become inconsistent when only some copies of it get updated","Running out of storage space","Having too many tables in a database"],
+          ans:1, rationale:"Normalization organizes data so each fact is stored in exactly one place. Without it, the same information repeated across many rows can drift out of sync when an update only reaches some of the copies.",
+          misconception:"Assuming normalization is primarily a performance or storage-space optimization — its core purpose is data integrity and consistency, and it can sometimes trade off against raw query speed." },
+        { stem:"In a one-to-many relationship between Students and Enrollments (one student can have many enrollments), which table holds the foreign key?", diff:"med", type:"mc",
+          opts:["Students, since it's the 'one' side","Enrollments, the 'many' side — each enrollment row references exactly one student via student_id","Both tables need a foreign key pointing at each other","Neither — foreign keys are only used in many-to-many relationships"],
+          ans:1, rationale:"In a one-to-many relationship, the foreign key lives on the 'many' side, since each row there needs to point back to exactly one row on the 'one' side. Students doesn't need one — it would have no single Enrollments row to consistently point to.",
+          misconception:"Assuming the foreign key placement is arbitrary or could go on either table — the direction of a one-to-many relationship specifically determines which table needs the referencing column." }
+      ]},
+
+    { id:"c3t2", title:"Querying with SELECT: Filtering, Sorting, Aggregating",
+      teach:[
+        "A SELECT statement retrieves data from one or more tables. At minimum it names which columns to return and from which table; `SELECT *` returns every column, which is convenient while exploring but worth narrowing down in real queries, since pulling unnecessary columns wastes bandwidth and makes results harder to read.",
+        "WHERE filters which rows are included, evaluated per row before anything else happens — `WHERE score >= 70` keeps only rows where that condition is true. ORDER BY sorts the result set after filtering, ascending by default or descending with the DESC keyword. LIMIT caps how many rows come back, useful for anything from 'top 10' queries to just sanity-checking a query against a big table without pulling the whole thing.",
+        "Aggregate functions — COUNT, SUM, AVG, MIN, MAX — collapse many rows into a single summary value. Paired with GROUP BY, they collapse rows into one summary value *per group* instead of one value overall: `SELECT department, AVG(salary) FROM employees GROUP BY department` gives one average per department, not one average for the whole table. A frequent early mistake is including a non-aggregated, non-grouped column in the SELECT list alongside an aggregate — most databases will reject that as ambiguous, since there's no single value for that column to report per group."
+      ],
+      example:{ tag:"Worked example", code:
+`SELECT department, COUNT(*) AS num_employees, AVG(salary) AS avg_salary
+FROM employees
+WHERE hire_date >= '2020-01-01'
+GROUP BY department
+ORDER BY avg_salary DESC
+LIMIT 5;`,
+        explain:"Execution order (not the order it's written): rows are filtered by WHERE first — only employees hired since 2020 remain in play. Those rows are then bucketed by department with GROUP BY. Within each bucket, COUNT and AVG collapse the rows into one row per department. The result set is then sorted by avg_salary from highest to lowest, and only the top 5 departments are returned." },
+      exercise:{ prompt:"Given a table Orders(id, customer, amount, status), write a query that returns the total amount spent by each customer, but only counting orders with status = 'completed', showing only customers whose total exceeds 500. Paste your query on the left, and on the right, note which clause you used to filter completed orders vs. which clause filters the total.",
+        expected:"WHERE filters rows before grouping; HAVING filters after aggregation",
+        hint:"WHERE status = 'completed' happens before grouping. Filtering on the aggregated SUM afterward requires HAVING, not WHERE — WHERE can't reference an aggregate result.",
+        concepts:["WHERE vs HAVING","GROUP BY","aggregate filtering"],
+        solution:`SELECT customer, SUM(amount) AS total_spent
+FROM Orders
+WHERE status = 'completed'
+GROUP BY customer
+HAVING SUM(amount) > 500;
+
+WHERE filters individual rows before they're grouped (status check).
+HAVING filters groups after aggregation (the summed total per customer).` },
+      checks:[
+        { stem:"What is the correct order of logical evaluation for a query with WHERE, GROUP BY, and ORDER BY?", diff:"med", type:"mc",
+          opts:["ORDER BY, then WHERE, then GROUP BY","WHERE filters rows first, then GROUP BY buckets them, then ORDER BY sorts the final result","GROUP BY runs first on the whole table, then WHERE, then ORDER BY","They all run simultaneously"],
+          ans:1, rationale:"Rows are filtered before grouping, so WHERE only ever sees individual, ungrouped rows. Sorting happens last, on whatever result set remains after filtering and grouping are done.",
+          misconception:"Assuming SQL clauses execute in the order they're typed — the written order (SELECT, FROM, WHERE, GROUP BY, ORDER BY) is not the same as the logical execution order." },
+        { stem:"Why can't WHERE be used to filter on the result of an aggregate function like SUM(amount) > 500?", diff:"hard", type:"mc",
+          opts:["WHERE can be used for this — HAVING is only for legacy databases","WHERE filters individual rows before aggregation happens, so the aggregated value doesn't exist yet at the point WHERE is evaluated; HAVING filters after grouping, when it does","WHERE only works with text columns","There's no functional difference between WHERE and HAVING"],
+          ans:1, rationale:"WHERE operates on raw rows before GROUP BY collapses them, so an aggregate like SUM hasn't been computed yet at that stage. HAVING exists specifically to filter after aggregation, once grouped summary values are available to compare against.",
+          misconception:"Treating WHERE and HAVING as interchangeable synonyms rather than filters that operate at two different stages of query execution." },
+        { stem:"A query returns duplicate rows because several orders share the same customer name. What keyword returns each unique customer name only once?", diff:"easy", type:"mc",
+          opts:["UNIQUE","DISTINCT — placed after SELECT, it collapses duplicate rows in the result down to one","ONLY","SINGLE"],
+          ans:1, rationale:"SELECT DISTINCT removes duplicate rows from the result set based on the selected columns. Without it, a query selecting just customer name from an Orders table returns one row per order, including repeats for customers with multiple orders.",
+          misconception:"Assuming a query naturally returns unique values by default — SELECT returns one row per matching row in the source table(s) unless DISTINCT (or grouping) explicitly collapses duplicates." },
+        { stem:"What does `WHERE name LIKE 'A%'` match?", diff:"med", type:"mc",
+          opts:["Only the exact value 'A%'","Any value that starts with the letter A, since % is a wildcard matching zero or more of any character","Any value containing the letter A anywhere","Only single-character names starting with A"],
+          ans:1, rationale:"% is a wildcard that matches any sequence of characters, including none. Placed at the end of 'A', the pattern matches anything starting with A — Alice, Aaron, A — but not Barbara, since it doesn't start with A.",
+          misconception:"Treating % as matching exactly one character, or assuming LIKE without any wildcards behaves differently from = — LIKE with no % characters at all behaves essentially like an exact match." },
+        { stem:"Why does `WHERE email = NULL` fail to find rows where email is actually NULL?", diff:"hard", type:"mc",
+          opts:["It doesn't fail — this is the correct way to check for NULL","NULL represents 'unknown,' and comparing anything to an unknown value with = also yields unknown (not true), so the row is never matched; IS NULL is the correct check","NULL is treated as the string 'NULL' by the database","= only works on numeric columns"],
+          ans:1, rationale:"NULL means the absence of a known value, and SQL's three-valued logic means any comparison involving NULL using = evaluates to unknown rather than true or false — so it never satisfies a WHERE clause. IS NULL is a dedicated check specifically designed to test for that absence.",
+          misconception:"Treating NULL like a regular value that can be compared with =, when it specifically represents the absence of a value and requires the IS NULL / IS NOT NULL operators instead." }
+      ]},
+
+    { id:"c3t3", title:"Combining Tables with JOINs",
+      teach:[
+        "A JOIN combines rows from two or more tables based on a related column between them, typically a foreign key matching a primary key. Without a join, related data trapped in separate tables can only be looked at one table at a time; a join is what lets a single query answer a question like 'which courses is A. Ruiz enrolled in' by pulling from both Students and Enrollments at once.",
+        "An INNER JOIN returns only rows where a match exists in both tables — a student with zero enrollments simply disappears from the result entirely, along with any enrollment row whose student_id doesn't match any row in Students. A LEFT JOIN keeps every row from the left (first-named) table regardless of whether a match exists on the right, filling in NULLs for the right side's columns when there's no match — the difference matters enormously for a question like 'list every student, including ones with no enrollments yet.'",
+        "The ON clause specifies exactly which columns must match for rows to be paired. Forgetting the ON clause, or getting the joined columns wrong, produces a cross join in effect — every row from one table paired with every row from the other, a result set that grows multiplicatively and almost never matches what was intended."
+      ],
+      example:{ tag:"Worked example: INNER vs LEFT", code:
+`-- INNER JOIN: only students who have at least one enrollment appear
+SELECT s.name, e.course
+FROM Students s
+INNER JOIN Enrollments e ON s.id = e.student_id;
+
+-- LEFT JOIN: every student appears, even with no enrollments
+SELECT s.name, e.course
+FROM Students s
+LEFT JOIN Enrollments e ON s.id = e.student_id;`,
+        explain:"If a third student, C. Ortiz, exists in Students but has never enrolled in anything, the INNER JOIN version omits her from the results entirely — there's no matching row in Enrollments to pair her with. The LEFT JOIN version still includes her, with `e.course` showing NULL for that row, because LEFT JOIN's contract is to preserve every row from the left table no matter what." },
+      exercise:{ prompt:"Using Students and Enrollments from the earlier topic, plus a hypothetical third student C. Ortiz with id 3 and no enrollment rows, write the LEFT JOIN query that lists every student's name alongside their course (or NULL). Paste your query on the left, and on the right list how many total rows the result would contain.",
+        expected:"4",
+        hint:"A. Ruiz has 2 enrollments, B. Chen has 1, C. Ortiz has 0 but still appears once with a NULL course under LEFT JOIN. 2 + 1 + 1 = 4.",
+        concepts:["LEFT JOIN","NULL handling","row-count reasoning"],
+        solution:`SELECT s.name, e.course
+FROM Students s
+LEFT JOIN Enrollments e ON s.id = e.student_id;
+
+Row count: A. Ruiz appears twice (CS101, MATH210), B. Chen once (CS101),
+C. Ortiz once with course = NULL. Total = 4 rows.` },
+      checks:[
+        { stem:"A student has no rows in the Enrollments table. Using an INNER JOIN between Students and Enrollments, what happens to that student in the result set?", diff:"med", type:"mc",
+          opts:["They appear once with NULL for enrollment columns","They don't appear in the result at all, since INNER JOIN only returns rows with a match on both sides","They cause the query to throw an error","They appear once for every other student in the table"],
+          ans:1, rationale:"INNER JOIN's defining behavior is to return only matched pairs. A student with zero matching rows in Enrollments contributes nothing to the joined result — not a NULL row, no row at all.",
+          misconception:"Expecting INNER JOIN to behave like LEFT JOIN and still surface unmatched rows with NULLs — that NULL-filling behavior is specific to outer joins (LEFT, RIGHT, FULL), not INNER." },
+        { stem:"What determines which rows from two tables get paired together in a JOIN?", diff:"easy", type:"mc",
+          opts:["Their row order in each table","The condition specified in the ON clause, typically matching a foreign key to a primary key","Alphabetical order of the table names","JOINs pair every possible combination automatically, with no condition needed"],
+          ans:1, rationale:"The ON clause is where the matching condition is defined. Omitting it or writing an incorrect condition changes which rows get paired, and can accidentally produce a cross-product of every row against every row.",
+          misconception:"Assuming a JOIN 'just knows' how to match related tables without an explicit condition — the relationship has to be stated, usually via a foreign-key-to-primary-key comparison." },
+        { stem:"How does a RIGHT JOIN differ from a LEFT JOIN?", diff:"med", type:"mc",
+          opts:["They are identical in every case","A RIGHT JOIN preserves every row from the second (right-named) table regardless of a match, the mirror image of how LEFT JOIN preserves every row from the first table","RIGHT JOIN only works with numeric columns","RIGHT JOIN always returns fewer rows than LEFT JOIN"],
+          ans:1, rationale:"LEFT JOIN keeps every row from the table listed first (left), filling NULLs on the right when there's no match. RIGHT JOIN mirrors that — it keeps every row from the table listed second (right) regardless of whether a match exists in the first table.",
+          misconception:"Assuming LEFT and RIGHT refer to some property of the data rather than simply which table — the one named first or second in the JOIN clause — gets its rows fully preserved." },
+        { stem:"Can a single query join more than two tables together?", diff:"easy", type:"mc",
+          opts:["No, SQL only supports joining exactly two tables per query","Yes — additional JOIN clauses can chain further tables, each with its own ON condition connecting it to the growing result","Yes, but only using UNION instead of JOIN","No, joining three or more tables requires a stored procedure"],
+          ans:1, rationale:"A query can include multiple JOIN clauses in sequence, each connecting a new table into the combined result via its own ON condition — a common pattern when a question spans three or more related tables.",
+          misconception:"Assuming JOIN is limited to exactly two tables per query — there's no such limit; each additional JOIN clause simply extends the same combined result set further." },
+        { stem:"A JOIN is written with an ON condition that doesn't correspond to a real foreign-key relationship between the tables. What's the likely result?", diff:"hard", type:"mc",
+          opts:["The database rejects the query with an error","The query still runs and returns whatever rows happen to satisfy that condition, which may be meaningless or far larger than intended, since the database doesn't require a JOIN condition to reflect a real relationship","It automatically falls back to the correct foreign key","JOIN requires the ON condition to reference a declared foreign key, or it won't compile"],
+          ans:1, rationale:"SQL doesn't require an ON condition to reflect an actual foreign-key relationship — it evaluates the condition exactly as written. A poorly chosen or unrelated condition still executes, producing a result set that may be nonsensical or far larger than intended.",
+          misconception:"Assuming the database validates that a JOIN condition makes semantic sense — it only checks that the SQL is syntactically valid, not that the columns being matched have any real relationship." }
+      ]},
+
+    { id:"c3t4", title:"Modifying Data & Enforcing Constraints",
+      teach:[
+        "INSERT adds new rows, UPDATE modifies existing rows, and DELETE removes rows — all three operate on rows that match whatever WHERE clause is specified, or on every row in the table if WHERE is omitted entirely. Running an UPDATE or DELETE without a WHERE clause is one of the most consequential mistakes possible in a database course or a production system, because it applies to the entire table with no confirmation step.",
+        "Constraints are rules the database enforces automatically, rejecting any operation that would violate them rather than trusting application code to always check first. NOT NULL rejects an insert or update that would leave a required column empty. UNIQUE rejects a value that already exists elsewhere in that column. A FOREIGN KEY constraint rejects inserting a value that doesn't correspond to an existing row in the referenced table — you can't enroll student_id 99 in a course if no student with id 99 exists.",
+        "These constraints exist specifically to protect data integrity independent of any single application's discipline. Multiple programs, scripts, or people might write to the same database over its lifetime; a constraint enforced at the database level holds regardless of which one of them forgot to validate input first."
+      ],
+      example:{ tag:"Worked example", code:
+`-- Table definition with constraints
+CREATE TABLE Students (
+    id INTEGER PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL
+);
+
+-- This succeeds
+INSERT INTO Students (id, email) VALUES (1, 'a@school.edu');
+
+-- This fails: email must be unique
+INSERT INTO Students (id, email) VALUES (2, 'a@school.edu');
+
+-- This fails: email cannot be null
+INSERT INTO Students (id, email) VALUES (3, NULL);`,
+        explain:"The UNIQUE constraint on email rejects the second insert outright — the database refuses the operation rather than silently storing a duplicate. The NOT NULL constraint rejects the third insert the same way. Neither failure required any application-level validation code; the database itself is the safeguard, which is exactly the point of declaring constraints at table-creation time instead of hoping every insert statement checks first." },
+      exercise:{ prompt:"Write an UPDATE statement that raises every employee's salary in the 'Sales' department by 5%, being careful to include a WHERE clause so it doesn't apply company-wide. Paste your statement on the left, and on the right, describe in one sentence what would happen if the WHERE clause were accidentally omitted.",
+        expected:"every employee in the entire table would get a 5% raise, not just Sales",
+        hint:"UPDATE table SET column = column * 1.05 WHERE department = 'Sales'; — the WHERE clause is what scopes the change to one department instead of the whole table.",
+        concepts:["UPDATE scoping","WHERE clause safety","unintended full-table writes"],
+        solution:`UPDATE Employees
+SET salary = salary * 1.05
+WHERE department = 'Sales';
+
+Without WHERE, every row in Employees would get the 5% raise applied,
+not just the Sales department — a company-wide change from what was
+meant to be a scoped one.` },
+      checks:[
+        { stem:"What happens if you run `DELETE FROM Orders;` with no WHERE clause?", diff:"easy", type:"mc",
+          opts:["Nothing — DELETE requires a WHERE clause by syntax rule","Every single row in the Orders table is deleted","Only the first row is deleted","It only deletes rows created today"],
+          ans:1, rationale:"DELETE without a WHERE clause applies to every row in the table with no exceptions and, in most systems, no confirmation prompt. This is why writing and double-checking the WHERE clause before running a DELETE or UPDATE is treated as a critical habit rather than an optional nicety.",
+          misconception:"Assuming the database will refuse an unscoped DELETE or ask for confirmation by default — most systems execute it immediately and irreversibly exactly as written." },
+        { stem:"A table has a FOREIGN KEY constraint on student_id referencing Students(id). What happens if you try to insert an Enrollments row with student_id = 99, and no student with id 99 exists?", diff:"med", type:"mc",
+          opts:["The insert succeeds and student_id 99 is treated as a placeholder","The database rejects the insert, since the foreign key constraint requires the referenced value to already exist in Students","The database automatically creates a new student with id 99","The constraint is only checked when the row is later queried, not on insert"],
+          ans:1, rationale:"A foreign key constraint's entire purpose is to guarantee referential integrity — every value in the constrained column must correspond to an existing row in the referenced table. The database checks this at insert time and rejects any value that doesn't have a match.",
+          misconception:"Assuming foreign key relationships are advisory or checked only later — a declared foreign key constraint is actively enforced at the moment of insert or update, not just a documentation convention." },
+        { stem:"A CHECK constraint is added to a salary column requiring salary > 0. What happens if an INSERT tries to set salary to -500?", diff:"med", type:"mc",
+          opts:["The insert succeeds, and the negative value is stored as-is","The database rejects the insert, since it violates the CHECK constraint's rule that salary must be greater than 0","The value is automatically converted to 500","CHECK constraints only apply to UPDATE, not INSERT"],
+          ans:1, rationale:"A CHECK constraint defines a rule that every row must satisfy, enforced on both INSERT and UPDATE. A value that violates it — a negative salary against a rule requiring salary > 0 — is rejected outright rather than silently stored or corrected.",
+          misconception:"Assuming constraints like CHECK only apply to updates on existing rows rather than to new rows being inserted — they apply to any operation that would leave a row violating the rule." },
+        { stem:"A foreign key constraint is defined with ON DELETE CASCADE. What happens when the referenced row in the parent table is deleted?", diff:"hard", type:"mc",
+          opts:["Nothing happens to the related child rows; they're left pointing at a deleted row","All child rows referencing that parent row are automatically deleted as well, keeping the two tables consistent","The delete on the parent row is blocked entirely","The child rows are updated to reference a random other parent row"],
+          ans:1, rationale:"ON DELETE CASCADE tells the database to automatically delete any dependent rows in the child table when their referenced parent row is deleted — deleting a student would automatically delete all of that student's enrollment rows too, rather than leaving orphaned references behind.",
+          misconception:"Assuming a deleted parent row simply leaves child rows with a dangling, unmatched reference by default — without CASCADE, most databases actually block the delete entirely rather than allow orphaned foreign keys; CASCADE is what enables the automatic cleanup instead." },
+        { stem:"A column is defined with `DEFAULT 'pending'`. What value does that column get if an INSERT statement doesn't specify a value for it?", diff:"easy", type:"mc",
+          opts:["NULL, since no value was given","'pending', the declared default value, is used automatically","The insert fails, since a value must always be given","0, regardless of the column's declared default"],
+          ans:1, rationale:"A DEFAULT constraint specifies a fallback value the database uses automatically whenever an INSERT doesn't explicitly provide one for that column, rather than leaving it NULL or rejecting the insert.",
+          misconception:"Assuming any omitted column automatically becomes NULL — that's only true if the column has no DEFAULT declared; a declared default takes precedence over NULL when a value isn't explicitly supplied." }
+      ]},
+
+  ]},
+};
+
+/* ---------------------------------------------------------
+   STATE
+--------------------------------------------------------- */
+const STATE = { checks:{}, sels:{}, reviewed:{}, exOK:{} };  // keyed by topicId, checks[topicId] = [bool,...]
+let currentSec = 'c1';
+let currentTopicIdx = 0;
+const optionOrderCache = {};   // qKey -> shuffled index array, cached until "Shuffle" is pressed
+let mixedSet = [];             // current mixed-review draw: [{topicId, qi}]
+const MIX_SIZE = 15;
+
+function allTopics(){ return CURRICULUM[currentSec].topics; }
+function topic(){ return allTopics()[currentTopicIdx]; }
+
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// stable-until-shuffled option order for a given question key
+function getOptionOrder(qKey, numOpts, forceNew){
+  if(forceNew || !optionOrderCache[qKey]){
+    optionOrderCache[qKey] = shuffleArr([...Array(numOpts).keys()]);
+  }
+  return optionOrderCache[qKey];
+}
+
+function buildMixedPool(){
+  const pool = [];
+  Object.keys(CURRICULUM).forEach(secKey=>{
+    CURRICULUM[secKey].topics.forEach(t=>{
+      t.checks.forEach((q,qi)=>{ pool.push({secKey, topicId:t.id, topic:t, qi, q}); });
+    });
+  });
+  return pool;
+}
+function drawMixedSet(){
+  const pool = buildMixedPool();
+  mixedSet = shuffleArr(pool).slice(0, MIX_SIZE);
+}
+
+/* ---------------------------------------------------------
+   RENDER: pills, secnav, tabs, scoreboard, progress
+--------------------------------------------------------- */
+function renderPills(){
+  const row = document.getElementById('pillRow');
+  row.innerHTML = '';
+  Object.keys(CURRICULUM).forEach(key=>{
+    const d = CURRICULUM[key];
+    const p = document.createElement('div');
+    p.className = 'pill' + (key===currentSec ? ' active':'');
+    p.style.setProperty('--dot', d.color);
+    p.innerHTML = `<span class="dot"></span>${d.short}`;
+    p.onclick = ()=>{ currentSec = key; currentTopicIdx = 0; renderAll(); };
+    row.appendChild(p);
+  });
+  const mixP = document.createElement('div');
+  mixP.className = 'pill' + (currentSec==='mix' ? ' active':'');
+  mixP.style.setProperty('--dot', 'var(--mix)');
+  mixP.innerHTML = `<span class="dot"></span>Mixed Review`;
+  mixP.onclick = ()=>{ currentSec = 'mix'; if(mixedSet.length===0) drawMixedSet(); renderAll(); };
+  row.appendChild(mixP);
+}
+
+function renderSecNav(){
+  const nav = document.getElementById('secNav');
+  nav.innerHTML = '';
+  Object.keys(CURRICULUM).forEach(key=>{
+    const d = CURRICULUM[key];
+    const done = d.topics.filter(t=>STATE.reviewed[t.id]).length;
+    const btn = document.createElement('div');
+    btn.className = 'secbtn' + (key===currentSec ? ' on':'');
+    btn.style.setProperty('--dot', d.color);
+    btn.innerHTML = `<div class="t">${d.name}</div><div class="s">${done}/${d.topics.length} topics reviewed</div>`;
+    btn.onclick = ()=>{ currentSec = key; currentTopicIdx = 0; renderAll(); };
+    nav.appendChild(btn);
+  });
+  const mixBtn = document.createElement('div');
+  mixBtn.className = 'secbtn' + (currentSec==='mix' ? ' on':'');
+  mixBtn.style.setProperty('--dot', 'var(--mix)');
+  mixBtn.innerHTML = `<div class="t">Mixed Review</div><div class="s">${MIX_SIZE} random questions, all competencies</div>`;
+  mixBtn.onclick = ()=>{ currentSec = 'mix'; if(mixedSet.length===0) drawMixedSet(); renderAll(); };
+  nav.appendChild(mixBtn);
+}
+
+function renderTabs(){
+  const row = document.getElementById('tabRow');
+  row.innerHTML = '';
+  if(currentSec==='mix'){ row.style.display='none'; return; }
+  row.style.display='flex';
+  allTopics().forEach((t,i)=>{
+    const tab = document.createElement('div');
+    const done = STATE.reviewed[t.id];
+    tab.className = 'tab' + (i===currentTopicIdx ? ' on':'') + (done ? ' done':'');
+    tab.textContent = (done?'✓ ':'') + t.title;
+    tab.onclick = ()=>{ currentTopicIdx = i; renderAll(); };
+    row.appendChild(tab);
+  });
+}
+
+function computeStats(){
+  let totalChecks=0, correctChecks=0, attemptedChecks=0, topicsReviewed=0, totalTopics=0, exercisesDone=0, totalExercises=0;
+  Object.values(CURRICULUM).forEach(sec=>{
+    sec.topics.forEach(t=>{
+      totalTopics++; totalExercises++;
+      if(STATE.reviewed[t.id]) topicsReviewed++;
+      if(STATE.exOK[t.id]) exercisesDone++;
+      t.checks.forEach((c,ci)=>{
+        totalChecks++;
+        const arr = STATE.checks[t.id];
+        if(arr && arr[ci]!==undefined){
+          attemptedChecks++;
+          if(arr[ci]===true) correctChecks++;
+        }
+      });
+    });
+  });
+  return {totalChecks, correctChecks, attemptedChecks, topicsReviewed, totalTopics, exercisesDone, totalExercises};
+}
+
+function renderScoreboard(){
+  const s = computeStats();
+  const acc = s.attemptedChecks ? Math.round(100*s.correctChecks/s.attemptedChecks) : 0;
+  const board = document.getElementById('scoreboard');
+  const cells = [
+    {n:s.topicsReviewed+'/'+s.totalTopics, l:'Topics reviewed'},
+    {n:s.exercisesDone+'/'+s.totalExercises, l:'Exercises confirmed'},
+    {n:s.attemptedChecks+'/'+s.totalChecks, l:'Checks attempted'},
+    {n:s.correctChecks, l:'Checks correct'},
+    {n:acc+'%', l:'Check accuracy'},
+  ];
+  board.innerHTML = cells.map(c=>`<div class="stat"><div class="n">${c.n}</div><div class="l">${c.l}</div></div>`).join('');
+
+  const overallPct = Math.round(100 * (s.topicsReviewed) / s.totalTopics);
+  document.getElementById('progFill').style.width = overallPct+'%';
+  document.getElementById('progPct').textContent = overallPct+'%';
+}
+
+/* ---------------------------------------------------------
+   RENDER: main topic content
+--------------------------------------------------------- */
+function esc(str){
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderMixedMain(){
+  const main = document.getElementById('main');
+  document.getElementById('prevBtn').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+
+  let html = `<div class="card">
+    <div class="kicker" style="color:var(--mix)">Mixed Review</div>
+    <h2>${MIX_SIZE} random questions across C1, C2 & C3</h2>
+    <p>Pulled fresh from the full 60-question bank every time you draw a new set — a quick way to check whether something learned in one competency has actually stuck, out of the order it was taught in.</p>
+    <div class="exrow"><button class="btn" id="mixShuffleBtn">Shuffle new set</button></div>
+  </div>`;
+
+  html += `<div class="card">`;
+  mixedSet.forEach((entry,idx)=>{
+    const t = entry.topic, qi = entry.qi, q = entry.q;
+    const secColor = CURRICULUM[entry.secKey].color;
+    html += `<div style="margin-bottom:${idx<mixedSet.length-1?'22px':'0'}">
+      <div class="qhead">
+        <span class="diff ${q.diff==='easy'?'easy':q.diff==='med'?'med':'hard'}">${q.diff}</span>
+        <span class="chip" style="color:${secColor}">${CURRICULUM[entry.secKey].short} · ${t.title}</span>
+      </div>
+      <div style="font-size:13.5px;font-weight:600;margin-bottom:10px">${q.stem}</div>
+      <div id="mopts-${idx}"></div>
+      <div id="mfb-${idx}"></div>
+    </div>`;
+  });
+  html += `</div>`;
+  main.innerHTML = html;
+
+  mixedSet.forEach((entry,idx)=>{
+    const t = entry.topic, qi = entry.qi, q = entry.q;
+    const qKey = t.id+'-'+qi;
+    const optsDiv = document.getElementById(`mopts-${idx}`);
+    const fbDiv = document.getElementById(`mfb-${idx}`);
+    const savedSel = (STATE.sels[t.id]||{})[qi];
+    const order = getOptionOrder(qKey, q.opts.length);
+    order.forEach(oi=>{
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.textContent = q.opts[oi];
+      if(savedSel!==undefined){
+        b.disabled = true;
+        if(oi===q.ans) b.classList.add('correct');
+        else if(oi===savedSel) b.classList.add('wrong');
+      }
+      b.onclick = ()=>{
+        if(!STATE.sels[t.id]) STATE.sels[t.id]={};
+        if(!STATE.checks[t.id]) STATE.checks[t.id]=[];
+        STATE.sels[t.id][qi]=oi;
+        STATE.checks[t.id][qi] = (oi===q.ans);
+        renderMixedMain();
+        renderScoreboard();
+      };
+      optsDiv.appendChild(b);
+    });
+    if(savedSel!==undefined){
+      const correctFlag = savedSel===q.ans;
+      fbDiv.innerHTML = `
+        <div class="feedback rationale"><span class="lbl">Why</span>${q.rationale}</div>
+        ${!correctFlag ? `<div class="feedback misconception"><span class="lbl">Common misconception</span>${q.misconception}</div>` : ''}
+      `;
+    }
+  });
+
+  document.getElementById('mixShuffleBtn').onclick = ()=>{
+    drawMixedSet();
+    renderMixedMain();
+    renderScoreboard();
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+}
+
+function renderMain(){
+  if(currentSec==='mix'){ renderMixedMain(); return; }
+  document.getElementById('prevBtn').style.display='';
+  document.getElementById('nextBtn').style.display='';
+  const t = topic();
+  const main = document.getElementById('main');
+  const secColor = CURRICULUM[currentSec].color;
+
+  let html = '';
+
+  // Teaching card
+  html += `<div class="card">
+    <div class="kicker" style="color:${secColor}">${CURRICULUM[currentSec].name}</div>
+    <h2>${t.title}</h2>
+    ${t.teach.map(p=>`<p>${p}</p>`).join('')}
+  </div>`;
+
+  // Example card
+  html += `<div class="card">
+    <div class="examplebox">
+      <div class="tag">${t.example.tag}</div>
+      <pre class="codebox">${esc(t.example.code)}</pre>
+      <p style="margin:0">${t.example.explain}</p>
+    </div>
+  </div>`;
+
+  // Exercise / grader card
+  html += `<div class="card">
+    <div class="exwrap">
+      <div class="tag">Try it yourself</div>
+      <p style="margin:0 0 10px">${t.exercise.prompt}</p>
+      ${t.exercise.starter ? `<pre class="codebox">${esc(t.exercise.starter)}</pre>` : ''}
+      <div class="exgrid">
+        <div>
+          <span class="exlabel">Your work / trace</span>
+          <textarea id="exLeft" placeholder="Paste your code, trace, or reasoning here"></textarea>
+        </div>
+        <div>
+          <span class="exlabel">Result you got</span>
+          <textarea id="exRight" placeholder="Paste the actual output / value here"></textarea>
+        </div>
+      </div>
+      <div class="exrow">
+        <button class="btn" id="exCheckBtn">Compare to expected</button>
+        <button class="btn ghost" id="exResetBtn">Clear</button>
+        <span id="exResult"></span>
+      </div>
+      <div class="hintbox" id="hintBox" style="display:none"></div>
+      <details class="solution">
+        <summary>Show worked solution</summary>
+        <pre class="codebox">${esc(t.exercise.solution)}</pre>
+      </details>
+      <div class="concepts">${t.exercise.concepts.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+    </div>
+  </div>`;
+
+  // Knowledge check card
+  html += `<div class="card"><div class="kicker">Knowledge check</div>`;
+  t.checks.forEach((q,qi)=>{
+    html += `<div style="margin-bottom:${qi<t.checks.length-1?'22px':'0'}">
+      <div class="qhead"><span class="diff ${q.diff==='easy'?'easy':q.diff==='med'?'med':'hard'}">${q.diff}</span></div>
+      <div style="font-size:13.5px;font-weight:600;margin-bottom:10px">${q.stem}</div>
+      <div id="opts-${t.id}-${qi}"></div>
+      <div id="fb-${t.id}-${qi}"></div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // review row
+  const reviewed = !!STATE.reviewed[t.id];
+  html += `<div class="revrow">
+    <button class="revbtn${reviewed?' done':''}" id="reviewBtn">${reviewed?'✓ Marked reviewed':'Mark topic as reviewed'}</button>
+  </div>`;
+
+  main.innerHTML = html;
+
+  // wire up knowledge check options
+  t.checks.forEach((q,qi)=>{
+    const optsDiv = document.getElementById(`opts-${t.id}-${qi}`);
+    const fbDiv = document.getElementById(`fb-${t.id}-${qi}`);
+    const savedSel = (STATE.sels[t.id]||{})[qi];
+    const order = getOptionOrder(t.id+'-'+qi, q.opts.length);
+    order.forEach(oi=>{
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.textContent = q.opts[oi];
+      if(savedSel!==undefined){
+        b.disabled = true;
+        if(oi===q.ans) b.classList.add('correct');
+        else if(oi===savedSel) b.classList.add('wrong');
+      }
+      b.onclick = ()=>{
+        if(!STATE.sels[t.id]) STATE.sels[t.id]={};
+        if(!STATE.checks[t.id]) STATE.checks[t.id]=[];
+        STATE.sels[t.id][qi]=oi;
+        STATE.checks[t.id][qi] = (oi===q.ans);
+        renderMain();
+        renderScoreboard();
+        renderTabs();
+      };
+      optsDiv.appendChild(b);
+    });
+    if(savedSel!==undefined){
+      const correctFlag = savedSel===q.ans;
+      fbDiv.innerHTML = `
+        <div class="feedback rationale"><span class="lbl">Why</span>${q.rationale}</div>
+        ${!correctFlag ? `<div class="feedback misconception"><span class="lbl">Common misconception</span>${q.misconception}</div>` : ''}
+      `;
+    }
+  });
+
+  // exercise wiring
+  document.getElementById('exCheckBtn').onclick = ()=>{
+    const right = document.getElementById('exRight').value.trim().toLowerCase();
+    const expected = t.exercise.expected.trim().toLowerCase();
+    const resultEl = document.getElementById('exResult');
+    const hintBox = document.getElementById('hintBox');
+    const match = right.length>0 && (right===expected || right.includes(expected));
+    if(match){
+      resultEl.textContent = '✓ Matches the expected result';
+      resultEl.className = 'exresult ok';
+      hintBox.style.display='none';
+      STATE.exOK[t.id]=true;
+      renderScoreboard();
+    } else {
+      resultEl.textContent = '✗ Not matching yet — check the hint below';
+      resultEl.className = 'exresult no';
+      hintBox.style.display='block';
+      hintBox.innerHTML = `<strong>Hint:</strong> ${t.exercise.hint}`;
+    }
+  };
+  document.getElementById('exResetBtn').onclick = ()=>{
+    document.getElementById('exLeft').value='';
+    document.getElementById('exRight').value='';
+    document.getElementById('exResult').textContent='';
+    document.getElementById('hintBox').style.display='none';
+  };
+
+  document.getElementById('reviewBtn').onclick = ()=>{
+    STATE.reviewed[t.id] = !STATE.reviewed[t.id];
+    renderMain(); renderScoreboard(); renderTabs(); renderSecNav();
+  };
+
+  document.getElementById('prevBtn').disabled = currentTopicIdx===0;
+  document.getElementById('nextBtn').disabled = currentTopicIdx===allTopics().length-1;
+}
+
+document.getElementById('prevBtn').onclick = ()=>{ if(currentTopicIdx>0){currentTopicIdx--; renderAll(); window.scrollTo({top:0,behavior:'smooth'});} };
+document.getElementById('nextBtn').onclick = ()=>{ if(currentTopicIdx<allTopics().length-1){currentTopicIdx++; renderAll(); window.scrollTo({top:0,behavior:'smooth'});} };
+
+/* ---------------------------------------------------------
+   MASTER RENDER
+--------------------------------------------------------- */
+function renderAll(){
+  renderPills();
+  renderSecNav();
+  renderTabs();
+  renderScoreboard();
+  renderMain();
+}
+
+renderAll();
+</script>
+</body>
+</html>
