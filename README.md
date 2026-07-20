@@ -5,8 +5,8 @@ practice-exam tools in this suite, this one is **learn-first**: it teaches
 each competency with explanations and worked examples before testing you,
 rather than jumping straight to timed questions.
 
-**Live:** `https://drmariodesean411-arch.github.io/<repo-name>/d615a-learn.html`
-*(swap `<repo-name>` for whichever repo you drop this into — see below)*
+**Live:** `https://drmariodesean411-arch.github.io/d615a-foundations-coding-Learn-first-walkthrough/d615a-learn.html
+
 
 ## What's inside
 
