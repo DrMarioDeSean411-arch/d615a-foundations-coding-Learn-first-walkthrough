@@ -162,46 +162,46 @@ const CURRICULUM = {
 
     { id:"c1t1", title:"Variables, Data Types & Expressions",
       teach:[
-        "A variable is a named slot in memory that holds a value the program can read or change while it runs. The name is for the human reading the code — the machine only cares about the address behind it — so a good variable name states what the value represents, not what type it is.",
-        "Every value carries a data type: an integer, a floating-point number, a string of characters, or a boolean. The type determines which operations make sense. Adding two integers produces a sum; adding two strings concatenates them; adding an integer to a string is either an error or a silent coercion, depending on the language, and that gap is where a surprising number of first-semester bugs come from.",
-        "An expression combines variables, literals, and operators into a single value: `price * quantity`, `age >= 18`, `first_name + \" \" + last_name`. Assignment (`=`) is not the same operation as mathematical equality — it takes whatever the right side evaluates to and stores it under the name on the left. Reading `total = total + 1` as an algebra equation with no solution is a common early misreading; read it instead as an instruction: compute the right side first, then overwrite `total`."
+        "A variable is a named slot in memory that holds a value the program can read or change while it runs. Python doesn't require you to declare a type up front — `balance = 120.50` creates the variable and its type at the same time, and that type can change later if the variable is reassigned to a value of a different type. The name is for the human reading the code — a good variable name states what the value represents, not what type it happens to be.",
+        "Every value carries a data type: `int`, `float`, `str`, `bool`, among others. The type determines which operations make sense. Adding two numbers produces a sum; joining two strings with + concatenates them; but attempting to add a string and a number directly — `\"5\" + 3` — raises a `TypeError` rather than silently converting one to match the other. Python expects you to convert explicitly with `str()` or `int()` before combining a string and a number, and that explicitness is a deliberate design choice, not an oversight.",
+        "An expression combines variables, literals, and operators into a single value: `price * quantity`, `age >= 18`, `first_name + \" \" + last_name`. Assignment (`=`) is not the same operation as mathematical equality (`==`) — assignment takes whatever the right side evaluates to and stores it under the name on the left. Reading `total = total + 1` as an algebra equation with no solution is a common early misreading; read it instead as an instruction: compute the right side first using total's current value, then overwrite total with the result."
       ],
       example:{ tag:"Worked example", code:
-`// starting balance and a deposit
-let balance = 120.50;
-let deposit = 45;
+`# starting balance and a deposit
+balance = 120.50
+deposit = 45
 
-balance = balance + deposit;   // 165.50
-let isOverdrawn = balance < 0; // false, a boolean
+balance = balance + deposit    # 165.5
+is_overdrawn = balance < 0     # False, a bool
 
-console.log(balance, isOverdrawn);`,
-        explain:"`balance` and `deposit` are numeric variables. The third line reassigns `balance` using its own prior value — a pattern you'll see constantly in loops and counters. `isOverdrawn` stores the *result* of a comparison, not the comparison itself; the variable's type is boolean even though nothing about the name says so." },
-      exercise:{ prompt:"Trace the code by hand, then paste what you believe the two printed values are (comma-separated) into the left box, and paste the values you get by actually running an equivalent snippet in any interpreter into the right box, to confirm your trace matches execution.",
-        starter:`let x = 10;
-let y = x;
-x = x + 5;
-console.log(x, y);`,
-        expected:"15, 10", hint:"Reassigning x after y was already set does not change y — y was copied by value at the moment of assignment, not linked to x.",
-        concepts:["assignment vs. equality","copy-by-value","reassignment"],
+print(balance, is_overdrawn)`,
+        explain:"balance and deposit are ordinary variables — Python infers their types from the values assigned. Adding an int (45) to a float (120.50) is allowed and produces a float (165.5), since both are numeric types; this is different from combining a str with a number, which Python refuses to do implicitly. is_overdrawn stores the *result* of a comparison, not the comparison itself; its type is bool even though nothing about the name declares that." },
+      exercise:{ prompt:"Trace the code by hand, then paste what you believe the two printed values are (comma-separated) into the left box, and paste the values you get by actually running an equivalent snippet in a Python interpreter into the right box, to confirm your trace matches execution.",
+        starter:`x = 10
+y = x
+x = x + 5
+print(x, y)`,
+        expected:"15, 10", hint:"Reassigning x after y was already set does not change y — y was assigned x's value at that moment, not linked to x afterward.",
+        concepts:["assignment vs. equality","copy-by-value for numbers","reassignment"],
         solution:`x starts at 10. y is assigned x's current value (10) — a snapshot, not a link.
 x is then reassigned to 15. y still holds 10 because nothing re-copies it.
 Printed: 15, 10` },
       checks:[
         { stem:"What does the statement `count = count + 1` do?", diff:"easy", type:"mc",
-          opts:["Asserts that count equals count plus one, which is always false","Reads the current value of count, adds 1, and stores the result back into count","Creates a new variable called count","Throws an error because a variable can't appear on both sides"],
+          opts:["Asserts that count equals count plus one, which is always false","Reads the current value of count, adds 1, and stores the result back into count","Creates a new variable called count","Raises an error because a variable can't appear on both sides"],
           ans:1, rationale:"Assignment evaluates the right-hand side first using the current value, then stores the result under the name on the left. It's an instruction, not an algebraic claim.",
-          misconception:"Students coming from math class often try to 'solve' this as an equation and conclude it's contradictory — assignment and equality use the same symbol in many languages but mean different things." },
-        { stem:"`let z = 3; let w = z; z = 9;` — what is the value of w?", diff:"med", type:"mc",
-          opts:["9","3","undefined","It depends on the language"],
-          ans:1, rationale:"w was assigned a copy of z's value (3) at the time of assignment. Changing z afterward has no effect on w for primitive types.",
-          misconception:"Assuming variables are permanently linked after one is assigned from another — that behavior applies to references/objects in some languages, not to plain numeric or string values." },
-        { stem:"What does `\"5\" + 3` evaluate to in a language that performs implicit type coercion on the + operator?", diff:"med", type:"mc",
-          opts:["8, because both operands are converted to numbers","\"53\", because the string operand causes the number to be coerced into a string and concatenated","An error, since you can't mix types","5, because the string is ignored"],
-          ans:1, rationale:"When one operand of + is a string, many languages coerce the other operand to a string and concatenate rather than performing arithmetic — the presence of a string decides the operator's behavior.",
-          misconception:"Assuming + always means arithmetic addition regardless of operand types — its behavior is type-dependent, and mixing a string with a number is a common source of surprising output." },
-        { stem:"`let isAdult = age >= 18;` — what data type does isAdult hold after this line runs?", diff:"easy", type:"mc",
-          opts:["The same type as age, whatever that is","A boolean — true or false, the result of evaluating the comparison","A string representation of the comparison","An integer: 1 or 0"],
-          ans:1, rationale:"A comparison expression evaluates to a boolean value regardless of the types being compared. isAdult stores that boolean result, not a copy of age or the comparison text itself.",
+          misconception:"Students coming from math class often try to 'solve' this as an equation and conclude it's contradictory — assignment (=) and equality (==) are different operators in Python that happen to look related." },
+        { stem:"`z = 3; w = z; z = 9` — what is the value of w?", diff:"med", type:"mc",
+          opts:["9","3","None","It depends on the order the lines are run"],
+          ans:1, rationale:"w was assigned a copy of z's value (3) at the time of assignment. Changing z afterward has no effect on w for plain numbers, strings, or other immutable values.",
+          misconception:"Assuming variables are permanently linked after one is assigned from another — that only applies to mutable objects accessed through a shared reference, like two names pointing at the same list, not to plain numbers." },
+        { stem:"What happens when you run `\"5\" + 3` in Python?", diff:"med", type:"mc",
+          opts:["It evaluates to 8, because Python converts the string to a number automatically","It raises a TypeError, because Python does not implicitly convert between str and int with the + operator","It evaluates to \"53\", because + always means concatenation when a string is involved","It evaluates to 5, because the string is ignored"],
+          ans:1, rationale:"Python's + operator requires both operands to already match — two strings concatenate, two numbers add. Mixing a str and an int raises a TypeError rather than silently converting one to fit the other.",
+          misconception:"Assuming Python coerces types automatically the way some other languages do; in Python you must explicitly convert with str() or int() before combining a string and a number, or the program stops with an error." },
+        { stem:"`is_adult = age >= 18` — what data type does is_adult hold after this line runs?", diff:"easy", type:"mc",
+          opts:["The same type as age, whatever that is","A bool — True or False, the result of evaluating the comparison","A string representation of the comparison","An integer: 1 or 0"],
+          ans:1, rationale:"A comparison expression evaluates to a bool regardless of the types being compared. is_adult stores that boolean result, not a copy of age or the comparison text itself.",
           misconception:"Assuming a variable's type is inherited from the variables used to compute it, rather than from the type of the expression's final result." },
         { stem:"What is the difference between a literal and a variable in an expression like `total = price * 1.08`?", diff:"med", type:"mc",
           opts:["There is no difference — both are variables","1.08 is a literal, a fixed value written directly into the code; price is a variable, a named reference to a value that can change","price is a literal because it doesn't change during this line","1.08 is a variable because it has a decimal point"],
@@ -211,142 +211,136 @@ Printed: 15, 10` },
 
     { id:"c1t2", title:"Control Structures: Conditionals & Loops",
       teach:[
-        "A program that runs the same instructions in the same order every time is only useful for a narrow set of problems. Conditionals (`if` / `else if` / `else`) let a program pick which block of code to run based on a boolean condition, and loops (`while`, `for`) let it repeat a block until a condition changes.",
-        "The condition in an `if` statement must evaluate to a boolean. A frequent source of confusion is writing `if (x = 5)` instead of `if (x == 5)` in languages that allow it — the single `=` performs an assignment, the assignment expression evaluates to the assigned value, and that value gets coerced to true or false, silently changing what the program does.",
-        "Loops need three things to behave correctly: an initial state, a condition checked before each pass, and a way for that condition to eventually become false. Leave out the third piece — forget to update the loop variable, or update it in a way that never satisfies the exit condition — and you get an infinite loop. A `for` loop bundles all three pieces into one line specifically to make it harder to omit one."
+        "A program that runs the same instructions in the same order every time is only useful for a narrow set of problems. Conditionals (`if` / `elif` / `else`) let a program pick which block of code to run based on a boolean condition, and loops (`while`, `for`) let it repeat a block until a condition changes. Python defines each block by indentation rather than braces, so consistent, correct indentation is part of the syntax itself, not just a style preference.",
+        "In many other languages, writing a single `=` inside an if-condition by mistake silently performs an assignment and changes program behavior without any warning. Python's grammar doesn't allow that at all — `if x = 5:` is a SyntaxError, caught before the program ever runs, because Python doesn't permit a bare assignment statement where it expects a boolean expression. The walrus operator (`:=`) exists for the rare case where assigning inside an expression is genuinely intended, but it has to be written deliberately.",
+        "Python's `for` loop iterates directly over a sequence — most often a `range()` — rather than the three-clause init/condition/increment form used in some other languages. `range(1, 6)` produces 1, 2, 3, 4, 5: five values, because range's stop argument is exclusive. A `while` loop needs three things to behave correctly: an initial state, a condition checked before each pass, and code inside the loop that eventually makes the condition false — omit that last piece and you get an infinite loop."
       ],
       example:{ tag:"Worked example", code:
-`let total = 0;
-for (let i = 1; i <= 5; i = i + 1) {
-    total = total + i;
-}
-console.log(total);   // 15`,
-        explain:"The loop runs with i = 1, 2, 3, 4, 5 — five passes total. Each pass adds i's current value into total. The condition `i <= 5` is checked before every pass, including a final check with i = 6 that fails and ends the loop. This accumulator pattern (a variable that grows across iterations) shows up constantly: summing, counting, building a string." },
-      exercise:{ prompt:"Modify the accumulator loop above so it multiplies instead of adds, producing the factorial of 5 (5! = 120). Write your version in the left box; paste the actual output you get from running it in the right box.",
-        expected:"120", hint:"An accumulator for multiplication must start at 1, not 0 — starting a product accumulator at 0 forces every multiplication to stay 0.",
-        concepts:["loop initialization","accumulator pattern","off-by-one boundaries"],
-        solution:`let product = 1;
-for (let i = 1; i <= 5; i = i + 1) {
-    product = product * i;
-}
-console.log(product);  // 120` },
+`total = 0
+for i in range(1, 6):
+    total = total + i
+print(total)   # 15`,
+        explain:"range(1, 6) produces 1, 2, 3, 4, 5 — five values, since the stop argument (6) is excluded. Each pass adds i's current value into total. This accumulator pattern (a variable that grows across iterations) reappears constantly: summing, counting, building a string." },
+      exercise:{ prompt:"Modify the accumulator loop above so it multiplies instead of adds, producing the factorial of 5 (5! = 120) using range(). Write your version in the left box; paste the actual output you get from running it in the right box.",
+        expected:"120", hint:"A product accumulator must start at 1, not 0 — starting a product accumulator at 0 forces every multiplication to stay 0. Keep range(1, 6) so i takes the values 1 through 5.",
+        concepts:["range() stop is exclusive","loop initialization","accumulator pattern"],
+        solution:`product = 1
+for i in range(1, 6):
+    product = product * i
+print(product)  # 120` },
       checks:[
         { stem:"A while loop's exit condition never becomes false. What happens?", diff:"easy", type:"mc",
-          opts:["The language automatically stops it after 1000 iterations","The program runs the loop body forever (an infinite loop), typically until it's forcibly stopped or resources run out","It throws a syntax error before running","It runs once and then skips the rest of the program"],
-          ans:1, rationale:"A while loop only stops when its condition evaluates to false. If nothing in the loop body ever changes the variables that condition depends on, the check keeps passing indefinitely.",
-          misconception:"Assuming there's a built-in iteration cap — most languages have no such safety net; the responsibility for a valid exit condition is entirely on the programmer." },
-        { stem:"Why does `for (let i=1; i<=5; i++)` run 5 times rather than 4 or 6?", diff:"med", type:"mc",
-          opts:["Because for loops always run exactly 5 times by default","Because the condition is checked before each pass and i takes the values 1,2,3,4,5, each satisfying i<=5, with i=6 failing the check","Because i++ runs 5 times before the loop starts","Because the loop body has 5 lines"],
-          ans:1, rationale:"i starts at 1 and increments after each pass. The condition i<=5 is true for i=1 through i=5 and false the moment i becomes 6, so the loop body executes exactly five times.",
-          misconception:"Miscounting boundary loops — writing i<5 when 5 iterations were wanted, or i<=5 when only 4 were wanted, is one of the most common off-by-one mistakes in early coding." },
-        { stem:"In an if / else-if / else-if / else chain, once one branch's condition evaluates to true, what happens to the remaining conditions below it?", diff:"med", type:"mc",
-          opts:["They are all still checked, and the last true one wins","They are skipped entirely — the chain stops at the first true condition and runs only that branch","They run in addition to the first true branch","Branch order doesn't affect which one runs"],
-          ans:1, rationale:"An if/else-if chain evaluates conditions top to bottom and stops at the first one that's true, executing only that branch. Order matters — a more specific condition placed after a broader one that would also match it never gets reached.",
-          misconception:"Assuming every condition in the chain gets evaluated regardless, similar to a list of independent if statements — else-if chains short-circuit at the first match." },
-        { stem:"When is a while loop generally preferred over a for loop?", diff:"med", type:"mc",
-          opts:["While loops are always faster","When the number of iterations isn't known in advance and instead depends on a condition becoming true during execution, such as reading input until a sentinel value appears","For loops can't contain conditionals","While loops are required for arrays"],
-          ans:1, rationale:"A for loop's structure assumes you can state the iteration count or bound up front. A while loop fits situations where the pass count genuinely isn't known ahead of time — waiting for input, searching until a condition is met.",
-          misconception:"Treating for and while as interchangeable syntax choices with no situational difference, when the real distinction is whether the iteration count is knowable in advance." },
-        { stem:"In `if (age >= 18 && hasID)`, what happens if age >= 18 evaluates to false?", diff:"med", type:"mc",
-          opts:["hasID is still checked, and the result depends only on hasID","Most languages short-circuit: since the left side of && is false, the whole expression is already false and hasID is never evaluated","The program throws an error","&& requires both sides to be written as full if statements"],
-          ans:1, rationale:"The && operator short-circuits: if the left operand is false, the overall result can only be false regardless of the right operand, so many languages skip evaluating the right side entirely.",
-          misconception:"Assuming both sides of a logical operator are always evaluated — short-circuiting means the right side may never run at all, which matters if it contains a function call with side effects." }
+          opts:["Python automatically stops it after 1000 iterations","The program runs the loop body forever (an infinite loop), typically until it's forcibly stopped or resources run out","It raises a SyntaxError before running","It runs once and then skips the rest of the program"],
+          ans:1, rationale:"A while loop only stops when its condition evaluates to False. If nothing in the loop body ever changes the variables that condition depends on, the check keeps passing indefinitely.",
+          misconception:"Assuming there's a built-in iteration cap — Python has no such safety net; the responsibility for a valid exit condition is entirely on the programmer." },
+        { stem:"Why does `for i in range(1, 6):` run 5 times rather than 4 or 6?", diff:"med", type:"mc",
+          opts:["Because range() always produces exactly 5 values by default","Because range(1, 6) generates 1, 2, 3, 4, 5 — the start value is included and the stop value is excluded","Because the loop body has 5 lines","Because i increments 5 times before the loop starts"],
+          ans:1, rationale:"range(start, stop) includes start and generates values up to but not including stop. range(1, 6) produces 1 through 5 — five values — because 6 itself is excluded.",
+          misconception:"Assuming range(1, 6) includes 6, or miscounting how many values a range produces — the exclusive stop boundary is one of the most common early sources of off-by-one mistakes in Python specifically." },
+        { stem:"Python raises a SyntaxError for `if x = 5:` instead of silently running it. Why is that actually a safeguard compared to languages that allow assignment inside a condition?", diff:"med", type:"mc",
+          opts:["Python doesn't actually check this at all","Python's grammar doesn't allow a bare assignment where a boolean expression is expected, so the classic '= vs ==' mistake is caught before the program ever runs, instead of becoming a silent logic bug","Python only allows assignment inside loops, not conditionals","This restriction only applies in Python 2, not Python 3"],
+          ans:1, rationale:"`if x = 5:` is invalid syntax in Python — assignment statements can't appear where a boolean expression is expected — so the parser catches the mistake immediately, unlike languages where `x = 5` inside a condition silently evaluates to the assigned value and changes behavior with no error at all.",
+          misconception:"Assuming every language handles the '=' vs '==' mix-up the same way; Python's grammar specifically prevents this bug pattern, though the walrus operator (:=) provides an explicit, intentional way to assign inside an expression when that's genuinely needed." },
+        { stem:"In `if age >= 18 and has_id:`, what happens if age >= 18 evaluates to False?", diff:"med", type:"mc",
+          opts:["has_id is still checked, and the result depends only on has_id","Python short-circuits: since the left side of and is False, the whole expression is already False and has_id is never evaluated","The program raises an error","and requires both sides to be written as separate if statements"],
+          ans:1, rationale:"The and operator short-circuits: if the left operand is False, the overall result can only be False regardless of the right operand, so Python skips evaluating the right side entirely.",
+          misconception:"Assuming both sides of a logical operator are always evaluated — short-circuiting means the right side may never run at all, which matters if it contains a function call with side effects." },
+        { stem:"When is a while loop generally preferred over a for loop in Python?", diff:"med", type:"mc",
+          opts:["while loops are always faster","When the number of iterations isn't known in advance and instead depends on a condition becoming true during execution, such as reading input until a sentinel value appears","for loops can't contain conditionals","while loops are required when working with lists"],
+          ans:1, rationale:"A for loop over range() or a sequence assumes you can state the iteration bound up front. A while loop fits situations where you genuinely don't know how many passes it will take — waiting for user input, searching until a condition is met.",
+          misconception:"Treating for and while as interchangeable syntax choices with no situational difference, when the real distinction is whether the iteration count is knowable in advance." }
       ]},
 
     { id:"c1t3", title:"Functions & Modular Design",
       teach:[
-        "A function packages a sequence of steps under a name so it can be run again without retyping it. Parameters are placeholders the function declares; arguments are the actual values handed to it at call time. Confusing the two vocabulary terms is harmless, but confusing the *mechanics* — believing a function can somehow see variables from the code that called it, beyond what was passed in as arguments — causes real bugs.",
-        "A function's return value is the result it hands back to whoever called it. A function with no return statement doesn't fail; it simply returns an empty/undefined value, and code that tries to use that result downstream breaks in a way that's easy to misdiagnose because the function itself ran without error.",
-        "Breaking a program into small functions, each responsible for one clearly named task, is what 'modular design' means in practice. The test for whether a function is doing one job: can you describe what it does in a single sentence without using the word 'and'? `calculateTax` doing one thing is fine; `calculateTaxAndPrintReceiptAndUpdateDatabase` is three functions wearing one name tag."
+        "A function packages a sequence of steps under a name so it can be run again without retyping it, defined in Python with `def`. Parameters are placeholders the function declares; arguments are the actual values handed to it at call time. Confusing the mechanics — believing a function can somehow see variables from the code that called it, beyond what was passed in as arguments — causes real bugs, since a function's local variables exist only inside its own scope and disappear once it returns.",
+        "A function's return value is the result it hands back to whoever called it. A function with no return statement doesn't fail; Python automatically returns `None`, and code that tries to use that result downstream breaks in a way that's easy to misdiagnose because the function itself ran without error — the failure shows up later, when something tries to treat None as if it were a real value.",
+        "Breaking a program into small functions, each responsible for one clearly named task, is what 'modular design' means in practice. The test for whether a function is doing one job: can you describe what it does in a single sentence without using the word 'and'? `calculate_tax` doing one thing is fine; `calculate_tax_and_print_receipt_and_update_database` is three functions wearing one name."
       ],
       example:{ tag:"Worked example", code:
-`function applyDiscount(price, percentOff) {
-    let discount = price * (percentOff / 100);
-    return price - discount;
-}
+`def apply_discount(price, percent_off):
+    discount = price * (percent_off / 100)
+    return price - discount
 
-let finalPrice = applyDiscount(80, 25);
-console.log(finalPrice);   // 60`,
-        explain:"`price` and `percentOff` are parameters — names local to the function, meaningful only inside its body. When called with `(80, 25)`, those arguments are bound to the parameters for that one call. The function computes and returns a value; it does not print anything itself, which is deliberate — a function that both calculates and prints is harder to reuse in a context where you only need the number." },
-      exercise:{ prompt:"Write a function `isEven(n)` that returns true if n is divisible by 2 with no remainder, false otherwise, then call it with 17. Paste your function+call on the left, and the actual boolean result on the right.",
-        expected:"false", hint:"The remainder operator (% in most C-family languages) gives you what's left over after division — n % 2 is 0 for even numbers.",
+final_price = apply_discount(80, 25)
+print(final_price)   # 60.0`,
+        explain:"price and percent_off are parameters — names local to the function, meaningful only inside its body. When called with (80, 25), those arguments are bound to the parameters for that one call. The function computes and returns a value; it does not print anything itself, which is deliberate — a function that both calculates and prints is harder to reuse in a context where you only need the number." },
+      exercise:{ prompt:"Write a function is_even(n) that returns True if n is divisible by 2 with no remainder, False otherwise, then call it with 17. Paste your function+call on the left, and the actual boolean result on the right.",
+        expected:"false", hint:"The modulo operator (%) gives you what's left over after division — n % 2 is 0 for even numbers, so n % 2 == 0 is the check you want.",
         concepts:["return values","modulo operator","boolean-returning functions"],
-        solution:`function isEven(n) {
-    return n % 2 === 0;
-}
-console.log(isEven(17));  // false` },
+        solution:`def is_even(n):
+    return n % 2 == 0
+
+print(is_even(17))  # False` },
       checks:[
-        { stem:"A function is defined `function greet(name) { message = \"Hi \" + name; }` — it has no return statement. What happens when you write `let x = greet(\"Sam\");`?", diff:"med", type:"mc",
-          opts:["x becomes the string \"Hi Sam\"","x becomes undefined, because the function never returns a value even though it built one internally","The program throws an error at the call site","x becomes the parameter name"],
-          ans:1, rationale:"Building a value inside a function and returning it are two separate steps. Without an explicit return, the function's call expression evaluates to undefined regardless of what happened inside.",
-          misconception:"Assuming the last expression evaluated inside a function is automatically what gets sent back to the caller — true in a few languages, false in most C-family and JavaScript-style languages, where return must be explicit." },
+        { stem:"A function is defined `def greet(name): message = \"Hi \" + name` — it has no return statement. What happens when you write `x = greet(\"Sam\")`?", diff:"med", type:"mc",
+          opts:["x becomes the string \"Hi Sam\"","x becomes None, because a function without a return statement always evaluates to None even though it built a value internally","The program raises an error at the call site","x becomes the parameter name"],
+          ans:1, rationale:"Building a value inside a function and returning it are two separate steps. Without an explicit return statement, Python automatically returns None from the function call, regardless of what was computed inside.",
+          misconception:"Assuming the last expression evaluated inside a function is automatically what gets sent back to the caller — in Python, return must be explicit, or the call evaluates to None." },
         { stem:"Why is a single function that validates input, saves it to a database, and emails a confirmation considered poor modular design?", diff:"hard", type:"mc",
-          opts:["It will run slower than three separate functions","It's harder to test, reuse, and reason about in isolation, and a failure in one responsibility is harder to trace to its source","JavaScript enforces a hard limit on function length","Functions can only call one operation each by language rule"],
+          opts:["It will run slower than three separate functions","It's harder to test, reuse, and reason about in isolation, and a failure in one responsibility is harder to trace to its source","Python enforces a hard limit on function length","Functions can only call one operation each by language rule"],
           ans:1, rationale:"Bundling unrelated responsibilities means you can't reuse the validation logic without also triggering an email, can't test the database write without a live email service, and a bug report about 'confirmation emails not sending' might actually be a validation failure two steps upstream.",
           misconception:"Treating modularity as a stylistic preference rather than something that changes how findable and fixable a bug is." },
-        { stem:"A function is defined `function greet(name = \"friend\") { return \"Hi \" + name; }`. What does `greet()` (called with no argument) return?", diff:"med", type:"mc",
-          opts:["An error, since name has no value","\"Hi friend\", because the default parameter value is used when no argument is supplied","\"Hi undefined\"","\"Hi \" with nothing appended"],
+        { stem:"A function is defined `def greet(name=\"friend\"): return \"Hi \" + name`. What does `greet()` (called with no argument) return?", diff:"med", type:"mc",
+          opts:["An error, since name has no value","\"Hi friend\", because the default parameter value is used when no argument is supplied","\"Hi None\"","\"Hi \" with nothing appended"],
           ans:1, rationale:"A default parameter value is used whenever the caller omits that argument. It only applies when the argument is missing — passing any value, even an empty string, would override the default.",
           misconception:"Assuming a missing argument always produces an error rather than falling back to a declared default, or assuming defaults apply even when a value was explicitly passed." },
-        { stem:"A recursive function calls itself but has no base case — no condition under which it stops calling itself. What happens when it runs?", diff:"med", type:"mc",
-          opts:["It runs once and returns normally","It calls itself indefinitely until it crashes, typically with a stack overflow error","It automatically detects the missing base case and stops safely","Recursion without a base case is a syntax error"],
-          ans:1, rationale:"Without a base case, a recursive function has no condition that ever stops it from calling itself again. Each call adds another frame to the call stack until the stack's size limit is exceeded and the program crashes.",
-          misconception:"Assuming the language or runtime will detect an infinite recursive pattern and intervene — most languages simply keep calling until the stack overflows." },
-        { stem:"A variable declared inside a function body — is it accessible from code outside that function?", diff:"easy", type:"mc",
-          opts:["Yes, all variables are accessible everywhere in the program","No, a variable declared inside a function is local to that function and doesn't exist outside its body once the function returns","Only if the function has a return statement","Only if the variable is declared first in the file"],
-          ans:1, rationale:"Local variables exist only within the scope they're declared in. Once a function finishes executing, its local variables are gone; outside code has no way to reference them by name.",
-          misconception:"Assuming a variable declared anywhere in a program is visible everywhere — scope rules restrict a local variable's visibility to the block or function it was declared in." }
+        { stem:"A recursive function calls itself but has no base case — no condition under which it stops calling itself. What happens when it runs in Python?", diff:"med", type:"mc",
+          opts:["It runs once and returns normally","It calls itself repeatedly until Python raises a RecursionError for exceeding the maximum recursion depth","Python automatically detects the missing base case and stops safely","Recursion without a base case is a SyntaxError"],
+          ans:1, rationale:"Without a base case, a recursive function has no condition that ever stops it from calling itself again. Each call adds another frame to the call stack until Python's recursion limit is exceeded and it raises a RecursionError.",
+          misconception:"Assuming Python will detect an infinite recursive pattern and intervene gracefully — it simply keeps calling until the interpreter's recursion limit is hit and raises an explicit error." },
+        { stem:"A variable assigned inside a function body — is it accessible from code outside that function?", diff:"easy", type:"mc",
+          opts:["Yes, all variables are accessible everywhere in the program","No, a variable assigned inside a function is local to that function and doesn't exist outside its body once the function returns","Only if the function has a return statement","Only if the variable is assigned first in the file"],
+          ans:1, rationale:"Local variables exist only within the scope they're assigned in. Once a function finishes executing, its local variables are gone; outside code has no way to reference them by name and would get a NameError trying.",
+          misconception:"Assuming a variable assigned anywhere in a program is visible everywhere — Python's scope rules restrict a local variable's visibility to the function it was assigned in." }
       ]},
 
-    { id:"c1t4", title:"Arrays, Lists & Iteration",
+    { id:"c1t4", title:"Lists & Iteration",
       teach:[
-        "An array (or list, depending on the language) stores an ordered sequence of values under one variable name, each accessible by a numeric index. Most languages used in this course index from 0, meaning the first element is at position 0, and the last element of an array with `n` items sits at position `n - 1` — not `n`. Reaching for index `n` is the single most common cause of an out-of-bounds error.",
-        "Iterating over an array means visiting each element in turn, usually with a loop whose counter tracks the current index. The loop's exit condition for array iteration is almost always `i < array.length`, using strictly-less-than specifically because the valid indices stop one short of the length.",
-        "Arrays support operations beyond simple indexing: searching for a value, filtering to a subset that matches a condition, and transforming each element into something new. Understanding these as three distinct operations — even before learning language-specific shortcuts for them — clarifies what a piece of code is actually trying to accomplish."
+        "A list stores an ordered sequence of values under one variable name, each accessible by a numeric index. Python indexes from 0, meaning the first element is at position 0, and the last element of a list with n items sits at position n - 1 — not n. Reaching for index n directly raises an IndexError, one of the most common early mistakes in Python specifically.",
+        "Iterating over a list can use `for item in my_list:`, which visits each element directly without needing an index at all — the idiomatic Python approach. When the position itself matters, `for i in range(len(my_list)):` gives you the index. Either way, len() — a built-in function, not a property — reports how many elements the list currently holds.",
+        "Lists support operations beyond simple indexing: searching for a value (the `in` operator, or `.index()` which raises a `ValueError` if the value isn't found), filtering to a subset that matches a condition, and transforming each element into something new. Understanding these as three distinct operations — even before learning Python shortcuts like list comprehensions — clarifies what a piece of code is actually trying to accomplish."
       ],
       example:{ tag:"Worked example", code:
-`let scores = [72, 88, 91, 60, 79];
-let passing = [];
+`scores = [72, 88, 91, 60, 79]
+passing = []
 
-for (let i = 0; i < scores.length; i = i + 1) {
-    if (scores[i] >= 70) {
-        passing.push(scores[i]);
-    }
-}
-console.log(passing);   // [72, 88, 91, 79]`,
-        explain:"The loop visits every index from 0 through scores.length - 1 (that's 0 through 4, five elements). Inside, a conditional filters which values get copied into a second array. Nothing about this pattern is specific to grades — it's the general shape of 'walk a list, keep what matches a rule,' and it reappears constantly." },
-      exercise:{ prompt:"Given the array [4, 15, 7, 22, 9], write a loop that finds and returns the largest value without using a built-in max function. Paste your code on the left, the value you get on the right.",
-        expected:"22", hint:"Start a variable at the first element (index 0), then compare it against every other element, replacing it whenever you find something larger.",
-        concepts:["array indexing","iteration","running comparison"],
-        solution:`let nums = [4, 15, 7, 22, 9];
-let largest = nums[0];
-for (let i = 1; i < nums.length; i = i + 1) {
-    if (nums[i] > largest) {
-        largest = nums[i];
-    }
-}
-console.log(largest);  // 22` },
+for score in scores:
+    if score >= 70:
+        passing.append(score)
+
+print(passing)   # [72, 88, 91, 79]`,
+        explain:"The loop visits every element of scores directly, without an index variable — score is bound to each value in turn. Inside, a conditional filters which values get appended into a second list. Nothing about this pattern is specific to grades — it's the general shape of 'walk a list, keep what matches a rule,' and it reappears constantly." },
+      exercise:{ prompt:"Given the list [4, 15, 7, 22, 9], write a loop that finds and returns the largest value without using Python's built-in max() function. Paste your code on the left, the value you get on the right.",
+        expected:"22", hint:"Start a variable at the first element (index 0), then compare it against every other element — nums[1:] slices off everything after the first — replacing it whenever you find something larger.",
+        concepts:["list indexing","iteration","running comparison"],
+        solution:`nums = [4, 15, 7, 22, 9]
+largest = nums[0]
+for n in nums[1:]:
+    if n > largest:
+        largest = n
+print(largest)  # 22` },
       checks:[
-        { stem:"An array `let arr = [10, 20, 30];` — what does `arr[3]` return?", diff:"easy", type:"mc",
-          opts:["undefined or an out-of-bounds error, since valid indices only run 0 through 2","30, the last element","The array's length","10, wrapping back to the first element"],
-          ans:0, rationale:"An array with 3 elements has valid indices 0, 1, and 2. Index 3 is one past the last valid position, so it returns undefined in some languages or throws an error in others — but never a valid element.",
-          misconception:"Assuming the index equal to the array's length points to the last element, when it actually points one position past it." },
-        { stem:"Why does array iteration typically use `i < array.length` rather than `i <= array.length`?", diff:"med", type:"mc",
-          opts:["Both work identically","Using <= would attempt to access one index past the last valid element on the final pass","<= is invalid syntax in most languages","length always equals the last valid index"],
-          ans:1, rationale:"If an array has length 5, its valid indices are 0-4. `i <= 5` would let the loop attempt index 5, which is out of bounds — exactly the off-by-one mistake that <length is designed to avoid.",
-          misconception:"Conflating an array's length (a count of elements) with its highest valid index (count minus one)." },
-        { stem:"After `let arr = [1,2,3]; arr.push(4);`, what is arr.length?", diff:"easy", type:"mc",
-          opts:["3, because push doesn't change length","4, because push appends a new element to the end and length reflects the new count","5, push adds two slots","It depends on the data type of 4"],
-          ans:1, rationale:"push adds one new element to the end of the array. The array now holds 4 elements, so length updates from 3 to 4 to stay accurate.",
-          misconception:"Assuming length is a fixed property set once at creation rather than a live count that updates automatically as elements are added or removed." },
-        { stem:"A search function looks for a value in an array and doesn't find it. What should it typically return, and why does that matter?", diff:"med", type:"mc",
-          opts:["It should return 0, since that's a neutral number","A clear not-found signal such as -1 or null, distinct from any valid index or result, so calling code can tell the difference between 'found at position 0' and 'not found'","It should throw an error every time","It doesn't matter what it returns as long as it returns something"],
-          ans:1, rationale:"If a not-found result used 0 or any valid index as its signal, calling code couldn't distinguish 'found at index 0' from 'not found at all' — a classic source of a logic error that only shows up for elements at the start of the array.",
-          misconception:"Picking a not-found sentinel value that overlaps with legitimately valid results, which silently breaks the specific case where the real answer happens to match the sentinel." },
-        { stem:"A for loop iterates `for (let i=0; i<arr.length; i++)` over an empty array (`arr = []`). How many times does the loop body run?", diff:"easy", type:"mc",
-          opts:["Zero times, since arr.length is 0 and the condition i<0 is false immediately on the first check","Once, to at least check the array","It throws an error on an empty array","Infinitely, since there's nothing to iterate toward"],
-          ans:0, rationale:"With arr.length equal to 0, the condition i<arr.length is i<0, which is false the very first time it's checked (i starts at 0). The loop body never executes — this is correct, expected behavior, not an error.",
-          misconception:"Assuming a loop must run at least once regardless of the condition — a for or while loop's condition is checked before each pass, including the very first one, so a false condition from the start means zero executions." }
+        { stem:"A list `arr = [10, 20, 30]` — what happens when you access `arr[3]`?", diff:"easy", type:"mc",
+          opts:["It returns 30, the last element","It raises an IndexError, since valid indices only run 0 through 2","It returns len(arr)","It wraps around and returns 10, the first element"],
+          ans:1, rationale:"A list with 3 elements has valid indices 0, 1, and 2. Index 3 is one past the last valid position, so Python raises IndexError: list index out of range rather than returning any value.",
+          misconception:"Assuming the index equal to a list's length points to the last element, when it actually points one position past it — and unlike some languages, Python raises an explicit error rather than returning None or undefined." },
+        { stem:"Why does iterating with `for i in range(len(arr)):` naturally avoid an out-of-bounds access, without needing an extra check?", diff:"med", type:"mc",
+          opts:["It doesn't — you still need a separate bounds check","range(len(arr)) generates indices 0 through len(arr) - 1, since range's stop value is excluded, which exactly matches arr's valid index range","len(arr) always equals the highest valid index directly","Python automatically skips the last index"],
+          ans:1, rationale:"len(arr) gives the count of elements. range(len(arr)) produces 0, 1, ..., len(arr) - 1 because range excludes its stop value — which lines up exactly with the list's valid indices, with no off-by-one adjustment needed.",
+          misconception:"Manually writing range(len(arr) + 1) 'to be safe,' which actually introduces the exact out-of-bounds access it was meant to prevent." },
+        { stem:"After `arr = [1, 2, 3]; arr.append(4)`, what is len(arr)?", diff:"easy", type:"mc",
+          opts:["3, because append doesn't change the list's reported length","4, because append adds one new element to the end and len() reflects the new count","5, append adds two slots","It depends on the data type of 4"],
+          ans:1, rationale:"append adds one new element to the end of the list. The list now holds 4 elements, so len(arr) returns 4 — len() always reflects the list's current state, not its state at creation.",
+          misconception:"Assuming a list's length is fixed once created rather than a live count that len() recomputes each time it's called." },
+        { stem:"What is the difference between using `value in my_list` and `my_list.index(value)` to check whether a value is present?", diff:"med", type:"mc",
+          opts:["They behave identically in every case","`in` returns a bool (True/False) and never fails; `.index()` returns the position if found but raises a ValueError if the value isn't present at all","`.index()` is always safer to use","`in` only works on strings, not lists"],
+          ans:1, rationale:"The in operator is a safe existence check that always returns True or False. .index() is for when you need the position, but calling it on a value that isn't in the list raises ValueError: ... is not in list rather than returning something like -1.",
+          misconception:"Assuming .index() returns a harmless sentinel value like -1 when nothing is found, the way some other languages' search functions do — Python's .index() raises an exception instead, which calling code must be prepared to handle." },
+        { stem:"A for loop iterates `for x in my_list:` over an empty list (`my_list = []`). How many times does the loop body run?", diff:"easy", type:"mc",
+          opts:["Zero times, since there are no elements to bind x to","Once, to at least check the list","It raises an error on an empty list","Infinitely, since there's nothing to iterate toward"],
+          ans:0, rationale:"Iterating over an empty sequence simply means there's nothing to bind the loop variable to, so the loop body never executes. This is correct, expected behavior, not an error.",
+          misconception:"Assuming a loop must run at least once regardless of what it's iterating over — a for loop over a sequence runs exactly as many times as there are elements, including zero." }
       ]},
 
   ]},
@@ -355,226 +349,220 @@ console.log(largest);  // 22` },
 
     { id:"c2t1", title:"Categories of Errors: Syntax, Runtime, Logic",
       teach:[
-        "Syntax errors are violations of the language's grammar — a missing parenthesis, an unclosed string, a misspelled keyword. The program won't run at all; most environments catch these before execution and point at the offending line, which makes them the easiest category to fix even though they're often the most frustrating for beginners to spot by eye.",
-        "Runtime errors occur while the program is executing: dividing by zero, calling a method on a value that's null or undefined, reading past the end of an array. The syntax was valid, so the program starts running, then halts partway through when it hits an operation it cannot complete.",
-        "Logic errors are the hardest category, because the program runs from start to finish without crashing and produces an answer — the answer is just wrong. No error message points at the problem; the only signal is output that doesn't match expectations, which is why testing against known correct results matters as much as getting code to simply run without complaint."
+        "Syntax errors are violations of Python's grammar — a missing colon, a mismatched parenthesis, inconsistent indentation. Python's parser catches these before the program ever executes, printing a SyntaxError (or, specifically for indentation problems, an IndentationError) that points at the offending line. Since Python uses indentation to define blocks instead of braces, inconsistent spacing is a distinctly Python source of this category, one that simply doesn't exist in brace-delimited languages.",
+        "Runtime errors — exceptions — occur while the program is executing: dividing by zero raises ZeroDivisionError, calling a method on a value that's None raises AttributeError, reading past the end of a list raises IndexError. The syntax was valid, so the program starts running, then halts partway through when it hits an operation it cannot complete.",
+        "Logic errors are the hardest category, because the program runs from start to finish without raising anything and produces an answer — the answer is just wrong. No exception points at the problem; the only signal is output that doesn't match expectations, which is why testing against known correct results matters as much as getting code to simply run without complaint."
       ],
       example:{ tag:"Worked example: same bug, three disguises", code:
-`// Syntax error — missing closing parenthesis
-if (x > 5 {
-    console.log("big");
-}
+`# Syntax error — missing colon
+if x > 5
+    print("big")
 
-// Runtime error — dividing by a variable that can be 0
-let average = total / count;   // count is 0 here
+# Runtime error — a ZeroDivisionError exception
+average = total / count   # count is 0 here
 
-// Logic error — runs fine, wrong formula
-let areaOfCircle = radius * radius * 3;   // should be * Math.PI`,
-        explain:"All three examples are 'wrong' but in fundamentally different ways. The first never runs. The second runs partway then crashes at that specific line, with a stack trace pointing to it. The third runs to completion and prints a plausible-looking number that is simply incorrect — 3 instead of roughly 3.14159 is a subtle enough substitution that it can survive a casual read-through of the code." },
-      exercise:{ prompt:"For each of these three snippets, decide which category — syntax, runtime, or logic — the error belongs to, then paste your three answers as a comma-separated list on the left. Snippets: (1) `let y = arr[10]` where arr only has 3 elements, (2) `for (let i=0; i<10 i++)`, (3) a tax calculator that always applies a 5% rate regardless of income bracket. Paste what you'd expect from testing each on the right.",
+# Logic error — runs fine, wrong formula
+area_of_circle = radius * radius * 3   # should be * math.pi`,
+        explain:"All three examples are 'wrong' but in fundamentally different ways. The first never runs — Python's parser rejects it immediately. The second runs partway then crashes at that specific line with a ZeroDivisionError. The third runs to completion and prints a plausible-looking number that is simply incorrect — 3 instead of roughly 3.14159 is a subtle enough substitution that it can survive a casual read-through of the code." },
+      exercise:{ prompt:"For each of these three snippets, decide which category — syntax, runtime, or logic — the error belongs to, then paste your three answers as a comma-separated list on the left. Snippets: (1) `arr[10]` where arr only has 3 elements, (2) `for i in range(10)` written with a missing colon at the end, (3) a tax calculator that always applies a 5% rate regardless of income bracket. Paste what you'd expect from testing each on the right.",
         expected:"runtime, syntax, logic",
-        hint:"Ask: does it fail to run at all (syntax), crash partway through (runtime), or run to completion with a wrong answer (logic)?",
+        hint:"Ask: does it fail to run at all (syntax), crash partway through with an exception (runtime), or run to completion with a wrong answer (logic)?",
         concepts:["error taxonomy","diagnostic reasoning"],
-        solution:`1. arr[10] on a 3-element array: RUNTIME — valid syntax, crashes when that line executes.
-2. missing semicolon between i<10 and i++ inside the for(): SYNTAX — the parser rejects it before anything runs.
+        solution:`1. arr[10] on a 3-element list: RUNTIME — valid syntax, raises IndexError when that line executes.
+2. missing colon after range(10): SYNTAX — the parser rejects it before anything runs.
 3. flat 5% rate ignoring brackets: LOGIC — runs fine, returns a number, the number is simply wrong.` },
       checks:[
-        { stem:"A program crashes with 'Cannot read property of null' halfway through execution. What category is this?", diff:"easy", type:"mc",
-          opts:["Syntax error","Runtime error","Logic error","Compilation error only"],
-          ans:1, rationale:"The program's grammar was valid enough to start running, and it failed midway when it tried to operate on a null value — the defining trait of a runtime error.",
+        { stem:"A program crashes partway through with `AttributeError: 'NoneType' object has no attribute 'name'`. What category is this?", diff:"easy", type:"mc",
+          opts:["Syntax error","Runtime error","Logic error","A compilation error only"],
+          ans:1, rationale:"The program's syntax was valid enough to start running, and it failed midway when it tried to access .name on a value that was None — the defining trait of a runtime error (an exception raised during execution).",
           misconception:"Labeling every crash a 'syntax error' regardless of when it happens — syntax errors specifically prevent the program from starting at all." },
-        { stem:"A grading script runs without any errors but assigns every student a B regardless of their actual score. What should you check first?", diff:"med", type:"mc",
-          opts:["Check for missing semicolons","Check the conditional logic and thresholds that assign letter grades, since this is a logic error with no crash to point at","Check whether the file was saved","Restart the computer, since it's likely a memory issue"],
-          ans:1, rationale:"No crash occurred and the program completed, which rules out syntax and runtime errors by definition. The wrong-but-consistent output is the signature of a logic error — most often a comparison operator, boundary value, or branch ordering mistake in the grading conditionals.",
+        { stem:"A grading script runs without raising any exceptions but assigns every student a B regardless of their actual score. What should you check first?", diff:"med", type:"mc",
+          opts:["Check for missing colons","Check the conditional logic and thresholds that assign letter grades, since this is a logic error with no exception to point at it","Check whether the file was saved","Restart the interpreter, since it's likely a memory issue"],
+          ans:1, rationale:"No exception occurred and the program completed, which rules out syntax and runtime errors by definition. The wrong-but-consistent output is the signature of a logic error — most often a comparison operator, boundary value, or branch ordering mistake in the grading conditionals.",
           misconception:"Reflexively blaming the environment (memory, save state) when output is simply incorrect rather than examining the decision logic that produced it." },
-        { stem:"Which category of error is typically caught by the language's parser before the program ever begins executing?", diff:"easy", type:"mc",
-          opts:["Logic errors","Runtime errors","Syntax errors, since the parser checks grammar before execution starts","All three are caught at the same stage"],
-          ans:2, rationale:"Syntax errors violate the language's grammar rules, and most environments check grammar during parsing, before a single line actually executes. Runtime and logic errors both require the program to actually be running to manifest.",
-          misconception:"Assuming all error types are detected at the same stage — the fact that a program starts running at all already rules out a syntax error as the cause." },
+        { stem:"Which exception does dividing by zero raise in Python, and which error category does it belong to?", diff:"easy", type:"mc",
+          opts:["SyntaxError; caught before the program runs","ZeroDivisionError; a runtime error, since the program starts running and fails partway through attempting the division","LogicError; the program's math is simply wrong","IndexError; since it involves a numeric operation"],
+          ans:1, rationale:"Python raises a specific exception, ZeroDivisionError, the moment a division by zero is attempted during execution. That's a runtime error by definition — valid syntax, a program that was already running, halted by a specific failed operation.",
+          misconception:"Assuming there's a generic catch-all 'math error' rather than Python's convention of raising a specific, named exception type for each distinct failure — recognizing the exception name is often the fastest path to the cause." },
+        { stem:"A block is indented with a mix of tabs and spaces, and Python raises an IndentationError before the program runs. What category does this fall under, and why does this specific error type exist in Python?", diff:"med", type:"mc",
+          opts:["It's a runtime error, since it only shows up when that block executes","It's a syntax error — a subtype specific to Python, since Python uses indentation itself to define code blocks instead of braces, so inconsistent indentation breaks the grammar before execution ever starts","It's a logic error, since the code might still run correctly","IndentationError doesn't actually stop the program"],
+          ans:1, rationale:"IndentationError is a subclass of SyntaxError. Because Python's grammar relies on consistent indentation to delimit blocks (rather than braces or keywords), inconsistent indentation is a grammar violation caught by the parser before any code executes — a category of syntax error that doesn't have a direct equivalent in brace-delimited languages.",
+          misconception:"Assuming indentation is just a style convention in Python rather than part of the language's actual grammar — inconsistent indentation isn't a formatting complaint, it prevents the program from parsing at all." },
         { stem:"A loop that never terminates because its exit condition is never satisfied — which error category does this fall under?", diff:"med", type:"mc",
-          opts:["Syntax error, since the loop is malformed","Logic error, since the program runs (and keeps running) without crashing, but never reaches a correct stopping point","Runtime error, since it always crashes eventually","It isn't an error at all if the loop body has valid syntax"],
-          ans:1, rationale:"An infinite loop is syntactically valid and doesn't throw a runtime exception on its own — it simply never satisfies the condition that was supposed to end it. That's a flaw in the program's logic, not its grammar or an operation it couldn't complete.",
-          misconception:"Assuming any long-running or broken-seeming program must be a runtime error — a runtime error specifically means an operation failed and halted execution, which an infinite loop, by definition, never does." },
-        { stem:"A program throws 'division by zero' at line 40. Is this a runtime error even though the program has valid syntax and otherwise sound logic elsewhere?", diff:"med", type:"mc",
-          opts:["No, any crash is automatically a logic error","Yes — the syntax was valid enough to start running, and it failed midway attempting an operation (division by zero) it could not complete","No, division problems are always syntax errors","Yes, but only if it happens inside a loop"],
-          ans:1, rationale:"The program successfully started and ran up to line 40, which rules out a syntax error. It then failed attempting a specific operation it couldn't complete — the textbook definition of a runtime error, regardless of whether the surrounding logic is otherwise correct.",
-          misconception:"Assuming a crash automatically implies flawed overall logic — a single unguarded operation, like a division that happens to hit a zero denominator on some particular input, can trigger a runtime error inside code that is otherwise logically sound." }
+          opts:["Syntax error, since the loop is malformed","Logic error, since the program runs (and keeps running) without raising anything, but never reaches a correct stopping point","Runtime error, since it always crashes eventually","It isn't an error at all if the loop body has valid syntax"],
+          ans:1, rationale:"An infinite loop is syntactically valid and doesn't raise an exception on its own — it simply never satisfies the condition that was supposed to end it. That's a flaw in the program's logic, not its grammar or an operation it couldn't complete.",
+          misconception:"Assuming any long-running or broken-seeming program must be a runtime error — a runtime error specifically means an operation failed and raised an exception, which an infinite loop, by definition, never does." }
       ]},
 
     { id:"c2t2", title:"A Systematic Debugging Process",
       teach:[
-        "Debugging by randomly changing lines until something works is slower than it feels, because it discards information every time it 'accidentally' fixes something without explaining why. A repeatable process trades that speed illusion for actual understanding, and it generalizes across languages and problem types.",
+        "Debugging by randomly changing lines until something works is slower than it feels, because it discards information every time it 'accidentally' fixes something without explaining why. A repeatable process trades that speed illusion for actual understanding, and it generalizes across problem types.",
         "The process has a consistent shape: reproduce the bug reliably first — a bug you can't trigger on demand can't be verified as fixed. Then isolate: narrow down which section of code is responsible, typically by checking intermediate values rather than staring at the whole program. Then form a hypothesis about the cause, specific enough that you could be wrong. Then test that hypothesis with the smallest possible change. Then verify the original bug is actually gone, not just quieter.",
-        "Isolation is usually the step people skip, jumping straight from 'something's wrong' to 'let me try changing this' without first narrowing down where the fault actually lives. Binary search applies here the same way it does to sorted arrays: if a program has ten steps and produces a wrong result, checking the value after step 5 tells you whether the bug is in the first half or second half, cutting the search space roughly in two with a single check."
+        "Isolation is usually the step people skip, jumping straight from 'something's wrong' to 'let me try changing this' without first narrowing down where the fault actually lives. Binary search applies here the same way it does to a sorted list: if a program has ten steps and produces a wrong result, checking the value after step 5 tells you whether the bug is in the first half or second half, cutting the search space roughly in two with a single check. Python's own tooling supports this directly — dropping a `breakpoint()` call into the code pauses execution at that exact line and opens an interactive debugger, letting you inspect or change any variable on the spot instead of deciding in advance what to print."
       ],
       example:{ tag:"Worked example: isolating with checkpoints", code:
-`function processOrder(items) {
-    let subtotal = calculateSubtotal(items);   // checkpoint A
-    let tax = calculateTax(subtotal);          // checkpoint B
-    let total = subtotal + tax;                // checkpoint C
-    return total;
-}
-// Bug report: total is way too high.
-// Check subtotal at A: correct.
-// Check tax at B: way too high — found it.`,
-        explain:"Rather than reading all three functions end to end guessing which one is wrong, the process checks the intermediate value at each checkpoint in order. Subtotal checks out, so calculateSubtotal is cleared as a suspect. Tax does not check out, so the search is now confined to calculateTax — a much smaller space to actually read carefully." },
-      exercise:{ prompt:"A function `computeGrade(score)` is returning 'F' for a score of 75, which should be a 'C'. Below is the buggy function. Trace it by hand, write down which specific line is wrong on the left, and what the corrected condition should read on the right.",
-        starter:`function computeGrade(score) {
-    if (score >= 90) return "A";
-    if (score >= 80) return "B";
-    if (score > 70) return "C";
-    if (score >= 60) return "D";
-    return "F";
-}`,
-        expected:'if (score >= 70) return "C";',
-        hint:"75 is greater than 70, so `score > 70` should already catch it and return C — trace it again more slowly and check every branch above that line too.",
+`def process_order(items):
+    subtotal = calculate_subtotal(items)   # checkpoint A
+    tax = calculate_tax(subtotal)          # checkpoint B
+    total = subtotal + tax                 # checkpoint C
+    return total
+
+# Bug report: total is way too high.
+# Check subtotal at A: correct.
+# Check tax at B: way too high — found it.`,
+        explain:"Rather than reading all three functions end to end guessing which one is wrong, the process checks the intermediate value at each checkpoint in order. subtotal checks out, so calculate_subtotal is cleared as a suspect. tax does not check out, so the search is now confined to calculate_tax — a much smaller space to actually read carefully." },
+      exercise:{ prompt:"A function compute_grade(score) is returning \"F\" for a score of 75, which should be a \"C\". Below is the buggy function. Trace it by hand, write down which specific line is wrong on the left, and what the corrected condition should read on the right.",
+        starter:`def compute_grade(score):
+    if score >= 90:
+        return "A"
+    if score >= 80:
+        return "B"
+    if score > 70:
+        return "C"
+    if score >= 60:
+        return "D"
+    return "F"`,
+        expected:'if score >= 70: return "C"',
+        hint:"75 is greater than 70, so score > 70 should already catch it and return C — trace it again more slowly and check every branch above that line too, since the actual bug may sit in a branch you skipped past.",
         concepts:["boundary conditions","branch ordering","hand tracing"],
-        solution:`Trace computeGrade(75):
-90? no. 80? no. score > 70 → 75 > 70 is TRUE... so this actually should return "C".
-The real bug: re-examine — if this were returning "F" for 75, the likely typo is
-"score > 70" accidentally written as "score > 170" or similar, or the branches
-are ordered/typo'd elsewhere. The teaching point: trace every branch explicitly
-rather than assuming the visible code matches what you expect it to say.` },
+        solution:`Trace compute_grade(75):
+90? no. 80? no. score > 70 -> 75 > 70 is True... so this should return "C".
+The teaching point: trace every branch explicitly and check the boundary
+value in each condition, rather than assuming the visible code already
+matches what you expect it to say — a boundary typo elsewhere in the
+chain (like score > 170) would be easy to miss without tracing line by line.` },
       checks:[
         { stem:"Why is reliably reproducing a bug the recommended first step, before trying to fix it?", diff:"easy", type:"mc",
-          opts:["It isn't necessary — you can fix bugs without ever seeing them happen","Without a reliable way to trigger the bug, you have no way to confirm afterward whether your fix actually worked or the bug just didn't happen to occur this time","It makes the code run faster","It's only needed for runtime errors, not logic errors"],
+          opts:["It isn't necessary — you can fix bugs without ever seeing them happen","Without a reliable way to trigger the bug, you have no way to confirm afterward whether your fix actually worked or the bug just didn't happen to occur this time","It makes the code run faster","It's only needed for syntax errors"],
           ans:1, rationale:"A fix you can't verify is a guess. If you can't make the bug happen on command, you also can't tell the difference between 'fixed' and 'didn't happen to trigger this time,' which is how bugs quietly come back later.",
           misconception:"Treating verification as optional once a plausible-looking fix has been applied." },
         { stem:"A program has 8 sequential processing steps and produces a wrong final result. What's the most efficient isolation strategy?", diff:"med", type:"mc",
-          opts:["Read all 8 steps in order from the top until something looks wrong","Check the intermediate value after step 4 first, then narrow to the half that's actually incorrect, repeating until you isolate one step","Rewrite all 8 steps from scratch","Add more print statements to every single line simultaneously"],
+          opts:["Read all 8 steps in order from the top until something looks wrong","Check the intermediate value after step 4 first, then narrow to the half that's actually incorrect, repeating until you isolate one step","Rewrite all 8 steps from scratch","Add print statements to every single line simultaneously"],
           ans:1, rationale:"Checking a midpoint value first and narrowing based on whether it's correct halves the search space with each check — the same binary-search logic used for sorted data, applied to a sequence of computation steps instead.",
           misconception:"Assuming debugging must proceed linearly from the first line of code, which is often the slowest possible search order for a long pipeline." },
-        { stem:"Why should a debugging hypothesis be specific enough that it could turn out to be wrong?", diff:"med", type:"mc",
-          opts:["Specificity doesn't matter, any guess will do","A vague hypothesis like 'something's off with the data' can't be tested or ruled out, while a specific one like 'the tax function is using the wrong rate constant' can be checked directly and either confirmed or eliminated","Specific hypotheses are always correct","Vague hypotheses are faster to test"],
-          ans:1, rationale:"A hypothesis that can't fail isn't actually testable — it just restates that something is wrong without narrowing down what. A specific, falsifiable hypothesis gives you a concrete check to run, which either confirms the cause or eliminates it and redirects the search.",
-          misconception:"Treating any guess as equally useful — the value of a hypothesis comes from its specificity, since only a specific claim can be checked against evidence and ruled out if wrong." },
+        { stem:"Python's built-in breakpoint() pauses execution at that line and opens an interactive debugger. How does this differ from print/trace debugging?", diff:"med", type:"mc",
+          opts:["It doesn't differ at all — both do the same thing","It lets you interactively inspect and even change variable values at the paused point without editing the code first, rather than deciding in advance what to print and re-running each time","It only works for syntax errors","It automatically fixes the bug for you"],
+          ans:1, rationale:"A breakpoint pauses the program mid-execution and drops into an interactive session where you can inspect any variable, step line by line, or change values on the spot — while print/trace debugging requires deciding in advance exactly what to display and re-running the program for each new question that comes up.",
+          misconception:"Assuming print statements and a debugger accomplish the same thing — a debugger lets you explore live program state interactively after the fact, while prints require the specific question to be anticipated before the program even runs." },
         { stem:"After applying a fix, why is it important to re-run the original reproduction steps rather than just moving on?", diff:"easy", type:"mc",
-          opts:["It isn't important once the code looks right","To confirm the specific bug is actually gone, not just that the code compiles or a different symptom quieted down","Re-running steps is only needed for syntax errors","It's a formality with no real diagnostic value"],
+          opts:["It isn't important once the code looks right","To confirm the specific bug is actually gone, not just that the code runs without raising an exception or a different symptom quieted down","Re-running steps is only needed for syntax errors","It's a formality with no real diagnostic value"],
           ans:1, rationale:"A fix can look correct by inspection and still fail to address the actual reported behavior, or it can fix a symptom while leaving the root cause intact. Re-running the original reproduction steps is the only direct confirmation that the specific reported bug no longer occurs.",
-          misconception:"Equating 'the code runs without crashing' with 'the bug is fixed' — those are different claims, and only re-testing the original scenario verifies the second one." },
+          misconception:"Equating 'the code runs without raising an exception' with 'the bug is fixed' — those are different claims, and only re-testing the original scenario verifies the second one." },
         { stem:"When testing a debugging hypothesis, why is making the smallest possible change preferable to changing several things at once?", diff:"med", type:"mc",
           opts:["Smaller changes are always faster to type","If several things change at once and the bug goes away, you can't tell which change actually fixed it — or whether a new problem was introduced alongside the fix","It isn't preferable — more changes fix more bugs at once","Small changes don't need to be tested"],
           ans:1, rationale:"Changing multiple things simultaneously confounds the test: if the bug disappears, you don't actually know which change was responsible, and you may have masked the real cause or introduced a new issue that happens to look like progress.",
           misconception:"Treating a debugging session as a chance to 'clean up' several suspicious-looking things at once — each simultaneous change removes your ability to attribute the outcome to a specific cause." }
       ]},
 
-    { id:"c2t3", title:"Reading Stack Traces & Trace/Print Debugging",
+    { id:"c2t3", title:"Reading Tracebacks & Print/Trace Debugging",
       teach:[
-        "A stack trace is the record a program prints when it crashes, listing the chain of function calls active at the moment of failure — usually with the most recent call (where the crash actually happened) at the top and the original entry point at the bottom. Reading a stack trace top-down tells you exactly which line failed and which sequence of calls led there.",
-        "New programmers often see a wall of unfamiliar text in a stack trace and skip straight to searching the error message online, missing the file name and line number sitting right there in their own code. The trace is pointing at a specific location; that location is almost always where to start looking, even when the actual root cause turns out to be a few calls further up the chain.",
-        "Print/trace debugging — inserting temporary output statements to display a variable's value at a specific point in execution — is a blunt but genuinely effective technique, especially for logic errors that don't produce a stack trace at all. The discipline that makes it work is being specific: printing a labeled value at a chosen checkpoint, rather than scattering unlabeled prints everywhere and losing track of which output came from where."
+        "In Python, a crash report is called a traceback, not a stack trace, and its own header tells you exactly how to read it: 'Traceback (most recent call last):'. The first frame listed is the outermost call, near the program's entry point, and each frame going down is a call made by the one above it — ending with the exact line that failed and the exception's type and message on the very last line.",
+        "New programmers often see the wall of unfamiliar text and read top to bottom looking for the problem near the top, when the single most useful piece of information — the specific exception type and the exact file and line where it occurred — is always at the bottom of a Python traceback. Reading one effectively means starting at the last line and, only if needed, working upward through the call chain to see how execution got there.",
+        "Print/trace debugging — inserting temporary print() statements to display a variable's value at a specific point in execution — is a blunt but genuinely effective technique, especially for logic errors that raise no exception and produce no traceback at all. The discipline that makes it work is being specific: printing a labeled value at a chosen checkpoint, rather than scattering unlabeled prints everywhere and losing track of which output came from where."
       ],
-      example:{ tag:"Worked example: reading a trace", code:
-`TypeError: Cannot read properties of undefined (reading 'price')
-    at calculateTotal (cart.js:14)
-    at checkout (cart.js:27)
-    at main (app.js:8)`,
-        explain:"Read top to bottom: the actual failure happened inside calculateTotal, at line 14 of cart.js, trying to read a `.price` property off something that was undefined. checkout called calculateTotal (line 27), and main called checkout (line 8). Start at line 14 — something being passed into calculateTotal doesn't have the shape the function expects, most likely a cart item missing a price field." },
-      exercise:{ prompt:"A function is producing an unexpected total but throws no error. Add print statements to the code below at the marked checkpoint to reveal the running total after each item, then paste your instrumented code on the left and the printed sequence you'd expect on the right, for items = [10, 20, 30].",
-        starter:`function sumItems(items) {
-    let total = 0;
-    for (let i = 0; i < items.length; i++) {
-        total += items[i];
-        // add a print here
-    }
-    return total;
-}`,
+      example:{ tag:"Worked example: reading a traceback", code:
+`Traceback (most recent call last):
+  File "app.py", line 8, in <module>
+    checkout()
+  File "cart.py", line 27, in checkout
+    calculate_total(cart)
+  File "cart.py", line 14, in calculate_total
+    return item.price
+AttributeError: 'NoneType' object has no attribute 'price'`,
+        explain:"Read from the bottom up: the last line names the exception type (AttributeError) and the message — something was None when the code tried to access .price on it. The line just above shows exactly where that happened: cart.py, line 14, inside calculate_total. Moving further up shows who called whom to get there — checkout called calculate_total, and the module-level code called checkout. Start at the bottom, and only work up if you need to see how a bad value arrived at that point." },
+      exercise:{ prompt:"A function is producing an unexpected total but raises no exception. Add print statements to the code below at the marked checkpoint to reveal the running total after each item, then paste your instrumented code on the left and the printed sequence you'd expect on the right, for items = [10, 20, 30].",
+        starter:`def sum_items(items):
+    total = 0
+    for item in items:
+        total += item
+        # add a print here
+    return total`,
         expected:"10, 30, 60",
-        hint:"Insert `console.log(total)` right after the accumulation line, inside the loop, so it fires once per iteration.",
+        hint:"Insert print(total) right after the accumulation line, inside the loop, so it fires once per iteration.",
         concepts:["print/trace debugging","checkpoint placement","accumulator tracing"],
-        solution:`function sumItems(items) {
-    let total = 0;
-    for (let i = 0; i < items.length; i++) {
-        total += items[i];
-        console.log(total);   // prints 10, then 30, then 60
-    }
-    return total;
-}` },
+        solution:`def sum_items(items):
+    total = 0
+    for item in items:
+        total += item
+        print(total)   # prints 10, then 30, then 60
+    return total` },
       checks:[
-        { stem:"In a stack trace, which line typically identifies the exact file and line number where the crash occurred?", diff:"easy", type:"mc",
-          opts:["The bottom-most line, since traces read bottom-up","The top-most line, since traces list the most recent (innermost) call first","Whichever line has the word 'Error' in it","Stack traces don't include line numbers"],
-          ans:1, rationale:"Stack traces list calls from most recent to least recent. The top line is where the program actually was when it crashed; lines below it show the chain of calls that led there.",
-          misconception:"Reading a stack trace bottom-up out of habit from reading code top-down — traces are ordered the opposite way, innermost failure first." },
-        { stem:"Print/trace debugging is especially useful for which category of error?", diff:"med", type:"mc",
-          opts:["Syntax errors, since prints reveal missing punctuation","Logic errors, which produce no crash or stack trace to point at a location","Runtime errors only, since they always include a trace already","It's not useful for any category — only a debugger tool works"],
-          ans:1, rationale:"Logic errors run to completion with no error message at all. Since there's no stack trace to consult, printed checkpoint values are often the only way to see where the computed values diverge from what's expected.",
-          misconception:"Assuming print debugging is a 'beginner crutch' inferior to a debugger in every case — for tracing a value's evolution across a loop, a well-placed print is often faster to set up than stepping through a debugger." },
-        { stem:"A stack trace lists five lines below the top one, each from a different function. What do those five lines represent?", diff:"med", type:"mc",
-          opts:["Five separate errors that all happened at once","The chain of function calls that were active leading up to the crash, each call still 'on the stack' waiting for the one below it to return","Five different possible fixes","Unrelated warnings that can be ignored"],
-          ans:1, rationale:"A stack trace shows the call chain, not multiple errors — each line is a function call still active (not yet returned) at the moment the crash occurred, going from the innermost failing call at the top down to the original entry point.",
-          misconception:"Interpreting each line of a stack trace as a distinct problem to fix individually, rather than a single chain of calls leading to one point of failure." },
+        { stem:"In a Python traceback, which line identifies the exact exception type and where the program actually failed?", diff:"med", type:"mc",
+          opts:["The first line at the top, since Python reads like other languages, most-recent-first","The very last line, since Python's own header states 'most recent call last' — the bottom line names the exception and where it happened","Whichever line contains the word 'Error'","Python tracebacks don't include line numbers"],
+          ans:1, rationale:"Python's traceback format is explicit about its own order — 'most recent call last' — meaning the deepest, most recent call, where the actual failure occurred, is printed last, at the bottom, along with the exception type and message.",
+          misconception:"Reading a Python traceback the same way as a stack trace from a language that lists the most recent call first — Python's order is the reverse, and its own header states this directly if you read it." },
+        { stem:"A traceback lists three frames below the header, each from a different function. What do those frames represent?", diff:"med", type:"mc",
+          opts:["Three separate errors that all happened at once","The chain of function calls that were active leading up to the failure, each one still 'on the stack' waiting for the one below it to return","Three different possible fixes","Unrelated warnings that can be ignored"],
+          ans:1, rationale:"A traceback shows the call chain, not multiple errors — each frame is a function call that was still active (had not yet returned) at the moment the exception occurred, from the outermost call down to the specific line that failed.",
+          misconception:"Interpreting each frame of a traceback as a distinct problem to fix individually, rather than a single chain of calls leading to one point of failure." },
         { stem:"Why is it good practice to remove temporary print/trace statements once a bug is fixed, rather than leaving them in?", diff:"easy", type:"mc",
-          opts:["Print statements slow the language's parser down permanently","Leftover debug output clutters real program output and can make it harder to spot genuinely important messages later, including during the next debugging session","It's not good practice — leaving them in is always preferred","Print statements cause syntax errors if left in too long"],
+          opts:["print() statements permanently slow down the interpreter","Leftover debug output clutters real program output and can make it harder to spot genuinely important messages later, including during the next debugging session","It's not good practice — leaving them in is always preferred","print() statements cause SyntaxErrors if left in too long"],
           ans:1, rationale:"Temporary prints served their purpose once the bug was located and confirmed fixed. Left in place, they mix debug noise into normal output, which makes future debugging sessions slower since real signal has to be picked out from leftover clutter.",
           misconception:"Treating debug prints as harmless to leave behind — accumulated leftover prints across many past debugging sessions can make a program's output nearly unreadable." },
-        { stem:"A stack trace's top line points into a third-party library file rather than your own code. Where should you generally look first?", diff:"hard", type:"mc",
-          opts:["Assume the library itself is broken and stop debugging","Check the line in your own code just below the library call in the trace — that's usually where a bad value was passed into the library in the first place","Ignore the trace entirely since it's not your code","Rewrite the library from scratch"],
-          ans:1, rationale:"Well-established libraries are rarely the actual root cause. The trace's next line down, in your own code, usually shows where the library function was called — and that's typically where an unexpected or malformed value was passed in, triggering the failure inside the library.",
-          misconception:"Assuming a crash inside a library's file means the library is at fault, when the far more common cause is bad input handed to it from the calling code." }
+        { stem:"A traceback's frame points into a third-party library's file rather than your own code. Where should you generally look first?", diff:"hard", type:"mc",
+          opts:["Assume the library itself is broken and stop debugging","Check the frame just below it, in your own code — that's usually where a bad value was passed into the library in the first place","Ignore the traceback entirely since it's not your code","Rewrite the library from scratch"],
+          ans:1, rationale:"Well-established libraries are rarely the actual root cause. The frame just below the library's, in your own code, usually shows where the library function was called — and that's typically where an unexpected or malformed value was passed in, triggering the failure inside the library.",
+          misconception:"Assuming an exception raised inside a library's file means the library is at fault, when the far more common cause is bad input handed to it from the calling code." },
+        { stem:"Print/trace debugging is especially useful for which category of error?", diff:"med", type:"mc",
+          opts:["Syntax errors, since prints reveal missing punctuation","Logic errors, which raise no exception and produce no traceback to point at a location","Runtime errors only, since they always include a traceback already","It's not useful for any category — only a debugger works"],
+          ans:1, rationale:"Logic errors run to completion with no exception at all. Since there's no traceback to consult, printed checkpoint values are often the only way to see where the computed values diverge from what's expected.",
+          misconception:"Assuming print debugging is a 'beginner crutch' inferior to a debugger in every case — for tracing a value's evolution across a loop, a well-placed print is often faster to set up than stepping through a debugger." }
       ]},
 
     { id:"c2t4", title:"Common Bug Patterns & Defensive Coding",
       teach:[
-        "A handful of bug shapes recur across almost every language and codebase, which makes them worth recognizing by pattern rather than re-deriving each time. Off-by-one errors — a loop that runs one time too many or too few, an index that's one position off — come from boundary conditions, usually a stray `<=` where `<` belongs or vice versa.",
-        "Null/undefined reference errors happen when code assumes a value exists — a lookup succeeded, an object has a field, a function returned something usable — without checking. The fix isn't to avoid null values entirely; it's to check for them explicitly at the boundary where an operation might not have produced one, rather than assuming success everywhere downstream.",
-        "Defensive coding means writing code that fails loudly and close to the actual problem instead of silently producing wrong results far downstream. A validation check at the top of a function that rejects bad input immediately, with a clear message, turns what would have been a mysterious logic error three functions later into an obvious, immediately traceable one."
+        "A handful of bug shapes recur across almost every codebase, which makes them worth recognizing by pattern rather than re-deriving each time. Off-by-one errors — a loop that runs one time too many or too few, an index that's one position off — come from boundary conditions, often a range() call with the wrong stop value.",
+        "In Python, a missing or not-yet-available value is represented by None, and code that assumes a value exists — a lookup succeeded, an attribute is present, a function returned something usable — without checking raises an AttributeError the moment it's used. A related trap: `if value:` treats 0, an empty string, and an empty list as falsy, exactly like None — so a plain truthiness check can't distinguish a legitimately empty or zero value from one that's genuinely missing. `if value is None:` checks specifically for absence.",
+        "Defensive coding means writing code that fails loudly and close to the actual problem instead of silently producing wrong results far downstream, often by raising a specific exception with `raise ValueError(...)` at the point an assumption is checked. One well-known Python-specific trap worth naming directly: a mutable default argument like a list is created exactly once, when the function is defined, not fresh on every call — so `def add_item(item, basket=[]):` silently accumulates state across calls that don't supply their own basket."
       ],
       example:{ tag:"Worked example: defensive check", code:
-`// Fragile: assumes user always exists
-function getUserEmail(user) {
-    return user.email;
-}
+`# Fragile: assumes user always exists
+def get_user_email(user):
+    return user.email
 
-// Defensive: fails clearly and immediately if the assumption breaks
-function getUserEmail(user) {
-    if (!user) {
-        throw new Error("getUserEmail called with no user object");
-    }
-    return user.email;
-}`,
-        explain:"The fragile version, given `undefined` instead of a real user object, crashes with a generic 'cannot read property of undefined' error somewhere that may be several calls removed from where the bad value actually originated. The defensive version fails at the exact point the bad assumption was made, with a message that names the function and the problem, cutting debugging time considerably." },
-      exercise:{ prompt:"The function below crashes when called with an empty array. Add a defensive check that returns 0 for an empty array instead of crashing, and paste your corrected function on the left, with the output for averageOf([]) on the right.",
-        starter:`function averageOf(nums) {
-    let sum = 0;
-    for (let i = 0; i < nums.length; i++) {
-        sum += nums[i];
-    }
-    return sum / nums.length;
-}`,
+# Defensive: fails clearly and immediately if the assumption breaks
+def get_user_email(user):
+    if user is None:
+        raise ValueError("get_user_email called with no user object")
+    return user.email`,
+        explain:"The fragile version, given None instead of a real user object, raises AttributeError: 'NoneType' object has no attribute 'email' — possibly from a call site several functions removed from where the bad value actually originated. The defensive version raises a ValueError immediately, at the exact point the bad assumption was made, naming the actual problem and cutting debugging time considerably." },
+      exercise:{ prompt:"The function below raises a ZeroDivisionError when called with an empty list. Add a defensive check that returns 0 for an empty list instead of crashing, and paste your corrected function on the left, with the output for average_of([]) on the right.",
+        starter:`def average_of(nums):
+    total = 0
+    for n in nums:
+        total += n
+    return total / len(nums)`,
         expected:"0",
-        hint:"Dividing by nums.length when the array is empty divides by 0. Add a check at the top: if the array has no elements, return 0 immediately before the loop runs.",
+        hint:"Dividing by len(nums) when the list is empty divides by 0. Add a check at the top: if the list has no elements, return 0 immediately before the loop runs.",
         concepts:["defensive coding","edge cases","division by zero"],
-        solution:`function averageOf(nums) {
-    if (nums.length === 0) {
-        return 0;
-    }
-    let sum = 0;
-    for (let i = 0; i < nums.length; i++) {
-        sum += nums[i];
-    }
-    return sum / nums.length;
-}` },
+        solution:`def average_of(nums):
+    if len(nums) == 0:
+        return 0
+    total = 0
+    for n in nums:
+        total += n
+    return total / len(nums)` },
       checks:[
         { stem:"What is the defining trait of an off-by-one error?", diff:"easy", type:"mc",
-          opts:["The program crashes on startup","A loop or index is exactly one position too far in one direction, often from a boundary comparison like < versus <=","The program uses the wrong data type","The variable name is misspelled"],
+          opts:["The program crashes on startup","A loop or index is exactly one position too far in one direction, often from a boundary mistake like an incorrect range() stop value","The program uses the wrong data type","The variable name is misspelled"],
           ans:1, rationale:"Off-by-one errors are specifically boundary mistakes — running an extra iteration, stopping one short, or reading one index past or before where you meant to.",
           misconception:"Lumping all indexing or loop bugs together as 'off-by-one' when some are actually a different root cause, like an uninitialized counter — precision in naming the bug type speeds up finding it." },
-        { stem:"Why does a defensive check that throws immediately with a clear message reduce debugging time compared to letting a bad value propagate?", diff:"med", type:"mc",
-          opts:["It doesn't — it just adds more code to maintain","It surfaces the problem at its origin instead of letting it resurface later as a confusing crash or wrong result several function calls downstream","It makes the program run faster","It automatically fixes the bad value"],
-          ans:1, rationale:"When bad input is caught immediately at the point it enters a function, the error message points directly at the actual source. Left unchecked, that same bad value can travel through several more functions before finally causing a crash somewhere that has nothing to do with where the problem started.",
+        { stem:"Why does a defensive check that raises immediately with a clear message reduce debugging time compared to letting a bad value propagate?", diff:"med", type:"mc",
+          opts:["It doesn't — it just adds more code to maintain","It surfaces the problem at its origin instead of letting it resurface later as a confusing AttributeError or wrong result several function calls downstream","It makes the program run faster","It automatically fixes the bad value"],
+          ans:1, rationale:"When bad input is caught immediately at the point it enters a function, the raised exception points directly at the actual source. Left unchecked, that same bad value can travel through several more functions before finally causing a failure somewhere that has nothing to do with where the problem started.",
           misconception:"Viewing input validation as unnecessary overhead rather than as a debugging-time investment that pays off the first time a bad value shows up in production." },
-        { stem:"A nested loop uses the same loop variable name `i` for both the outer and inner loop, without properly scoping each to its own block. What's the likely consequence?", diff:"hard", type:"mc",
-          opts:["No consequence, languages handle this automatically","The inner loop can overwrite the outer loop's counter, corrupting the outer loop's iteration once control returns to it","It causes a syntax error every time","It only matters if the loops run more than 100 times"],
-          ans:1, rationale:"If both loops share one mutable variable named i without proper block scoping, the inner loop's changes to i persist after it finishes, so the outer loop resumes with a corrupted counter — a bug pattern that's easy to introduce by copy-pasting loop code without renaming the inner variable.",
-          misconception:"Assuming variable name reuse across nested scopes is automatically safe — it depends entirely on whether the language and syntax used actually give each loop its own separate variable rather than sharing one." },
-        { stem:"Comparing two floating-point numbers with `==` for exact equality (e.g., `0.1 + 0.2 == 0.3`) sometimes returns false unexpectedly. Why?", diff:"hard", type:"mc",
-          opts:["It's a bug in the language that will eventually be fixed","Floating-point numbers are stored in a binary format that can't represent most decimal fractions exactly, so tiny rounding differences accumulate and break exact equality checks","== doesn't work on numbers at all","0.1 and 0.2 are stored as strings, not numbers"],
-          ans:1, rationale:"Binary floating-point representation can't exactly store most decimal fractions, so arithmetic on them accumulates small rounding errors. Comparing for exact equality after such arithmetic often fails even when the values are mathematically equal, which is why comparing against a small tolerance range is the standard workaround.",
-          misconception:"Treating unexpected floating-point comparison results as a language bug rather than an inherent, well-documented property of how floating-point numbers are represented in memory." },
-        { stem:"A function silently catches an error and returns a default value with no logging or message, instead of letting it surface. What's the risk of this pattern?", diff:"med", type:"mc",
-          opts:["There's no risk — silent handling is always safer","The real failure becomes invisible, so a genuine problem can persist undetected for a long time, surfacing later as a confusing symptom far from its actual cause","It makes the program run faster","It automatically fixes the underlying error"],
-          ans:1, rationale:"Swallowing an error without any trace of it happening means there's no signal that something went wrong at all. The problem doesn't disappear — it just becomes invisible at the point it occurred, likely to resurface later as a much harder to diagnose symptom.",
-          misconception:"Equating 'the program didn't crash' with 'the program is working correctly' — silently handled errors can mask real problems for a long time before they become visible in a much more confusing form." }
+        { stem:"Why isn't `if value:` always equivalent to `if value is None:` when checking whether a value is present?", diff:"med", type:"mc",
+          opts:["There's no difference, they always behave identically","`if value:` treats 0, empty strings, and empty lists as falsy too, incorrectly grouping a legitimate zero or empty value with a genuinely missing one; `if value is None:` checks specifically for absence","is None only works on strings","if value: is always the safer choice"],
+          ans:1, rationale:"Python treats several legitimate values — 0, \"\", [], {} — as falsy, the same as None, in a plain truthiness check. If a valid input can legitimately be zero or empty, `if value:` will incorrectly treat it the same as missing; `is None` checks specifically and only for actual absence.",
+          misconception:"Assuming a plain truthiness check is equivalent to explicitly checking for None — this substitution silently misclassifies valid falsy values like 0 or an empty list as if they were missing." },
+        { stem:"A function is defined `def add_item(item, basket=[]): basket.append(item); return basket`. Called twice with no second argument, the second call's basket unexpectedly already contains the first call's item. Why?", diff:"hard", type:"mc",
+          opts:["Lists are always shared globally in Python","A mutable default argument like a list is created exactly once, when the function is defined, and reused across every call that doesn't supply its own — so basket accumulates state between calls instead of starting fresh","Python resets default arguments after every call, so this shouldn't happen","append() creates a brand-new list automatically each time"],
+          ans:1, rationale:"Default argument values in Python are evaluated once, at function definition time, not fresh on every call. A mutable default like a list persists across calls that rely on it, silently accumulating state — a well-known, well-documented Python pitfall usually avoided by defaulting to None and creating a new list inside the function body when needed.",
+          misconception:"Assuming a default argument is re-created fresh every time the function is called, the same way a local variable would be — mutable defaults are a specific, well-documented exception to that expectation." },
+        { stem:"Calling the fragile version of get_user_email(None) — what actually happens?", diff:"med", type:"mc",
+          opts:["It returns None silently, with no indication anything went wrong","It raises AttributeError: 'NoneType' object has no attribute 'email', failing at the exact line that assumed user was never None","It returns an empty string","It raises a ValueError automatically, without needing a defensive check"],
+          ans:1, rationale:"Attempting to access .email on None specifically raises Python's AttributeError with a message naming the type (NoneType) and the missing attribute — a very common runtime error whenever code assumes a value exists without checking first.",
+          misconception:"Assuming a missing/None value causes a generic, unlabeled crash — Python's AttributeError message is actually quite specific about what happened, and learning to read it (NoneType has no attribute X) points directly at the assumption that broke." }
       ]},
 
   ]},
